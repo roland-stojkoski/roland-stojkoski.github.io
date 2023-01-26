@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+label {
+	font-family: 'Source Code Pro', monospace;
+}
+
+.container-implemented {
+	@apply prose prose-slate container mx-auto;
+}
+
+.container-implemented > h1 {
+	@apply text-center mt-5;
+}
