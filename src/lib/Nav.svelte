@@ -1,5 +1,6 @@
 <script>
 	import profilePic from '$lib/assets/rs-high-res-current-photo-cropped.jpg';
+	import { base } from '$app/paths';
 	import { Avatar } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { themeChange } from 'theme-change';
@@ -33,10 +34,10 @@
 				tabindex="0"
 				class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
 			>
-				<li><a href="/">Homepage</a></li>
-				<li><a href="/about">About</a></li>
-				<li><a href="/attributions">Attributions</a></li>
-				<li><a href="/contact">Contact</a></li>
+				<li><a href="{base}/">Homepage</a></li>
+				<li><a href="{base}/about">About</a></li>
+				<li><a href="{base}/attributions">Attributions</a></li>
+				<li><a href="{base}/contact">Contact</a></li>
 			</ul>
 		</div>
 	</div>
