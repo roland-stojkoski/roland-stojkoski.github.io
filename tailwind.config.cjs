@@ -6,7 +6,8 @@ const config = {
 	theme: {
 		extend: {
 			height: (theme) => ({
-				'screen/2': '50vh'
+				'screen/2': '50vh',
+				'screen/3': '33vh'
 			})
 		}
 	},

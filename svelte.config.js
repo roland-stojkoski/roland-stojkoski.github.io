@@ -21,7 +21,6 @@ const config = {
 			postcss: true
 		})
 	],
-
 	kit: {
 		adapter: adapter(),
 		paths: {

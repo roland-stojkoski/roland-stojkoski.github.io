@@ -2,7 +2,7 @@
 	import homePic from '$lib/assets/home/coffee_minimal.jpg';
 </script>
 
-<div class="hero h-screen/2" style="background-image: url({homePic});">
+<div class="hero h-screen/3" style="background-image: url({homePic});">
 	<div class="hero-overlay bg-opacity-60" />
 	<div class="hero-content text-center text-neutral-content">
 		<div class="prose text-white max-w-md">
