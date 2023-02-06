@@ -1,9 +1,33 @@
 # Roland Stojkoski's portfolio website
 
 Simple website that lists all my projects, articles and notable events.
-Powered by SvelteKit, Tailwind, DaisyUI, FlowBite, FontAwesome, etc.
+Powered by SvelteKit, Tailwind, DaisyUI, FlowBite, FontAwesome, Mailchimp, etc.
+
+Features:
+- Markdown - just add an `.md` file and new article page will be added
+- Plug and play UI components with Tailwind and DaisyUI - super easy for someone that's not proficient in frontend dev
+- Email subscription - using Mailchimp
+- Dark mode 😀
 
 ---
+
+## Adding articles
+
+Add a Markdown `.md` file to - `src/lib/assets/articles/`.
+
+Add the following to the beggining file and fill out the `<>` values:
+
+```
+---
+title: '<title>'
+date: '<m/d/yyyy>'
+tldr: '<timeline-summary>'
+githubLink: '<link-to-github-repo>' # not required
+---
+
+```
+
+The article will show up in the timeline and will be added as a page automatically.
 
 ## Developing
 
