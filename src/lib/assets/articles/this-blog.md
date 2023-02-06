@@ -141,7 +141,7 @@ npm run build # Prerenders the artifacts and creates a build/ directory
 npm run deploy # Deploys to Github repo on a separate branch (make sure in the settings you switch to that branch [default is - gh-pages])
 ```
 
-Go to - `https://github.com/<username>/<username>.github.io/deployments` (replace `<username>` with your own) and check if the deployment succeeded.
+Go to - `https://github.com/<username>/`<br/>`<username>.github.io/deployments` (replace `<username>` with your own) and check if the deployment succeeded.
 
 Open `https://<username>.github.io` and enjoy your shiny new website 😀.
 

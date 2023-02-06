@@ -8,6 +8,17 @@
 
 <Container>
 	<!-- Begin Mailchimp Signup Form -->
+	<h2>Contact</h2>
+	<p>
+		If you are interested in collaborating, have found something wrong with the website, would just
+		like to chat or anything else, feel free to fill out this - <a
+			href="https://us13.list-manage.com/contact-form?u=9686f238f91d4f6de32382fe3&form_id=c320ff8e1d9e488ffacec0a4404b6ee7"
+			>contact form</a
+		>.
+	</p>
+	<p>
+		I look forward to hearing from you 😀.
+	</p>
 	<h2>Subscribe</h2>
 	<p>Subscribe to receive emails about the latest articles, events & projects.</p>
 	<div id="mc_embed_signup">
