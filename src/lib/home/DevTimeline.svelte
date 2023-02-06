@@ -37,8 +37,9 @@
 
 <Timeline>
 	<div class="list-none">
-		<TimelineItem date="♾️">
-			<p><i>... more to come 😀</i></p>
+		<TimelineItem>
+			<h3><i class="fa-solid fa-infinity" /></h3>
+			<p>... more to come <i class="fa-solid fa-face-laugh" /></p>
 		</TimelineItem>
 		{#each parsedItems as item}
 			<TimelineItem title={item.title} date={item.date.toDateString()}>
@@ -66,20 +67,37 @@
 			<h3>Full time @ <i class="fa-brands fa-aws" /> (SysDE I)</h3>
 		</TimelineItem>
 		<TimelineItem date="2020">
-			<h3>Finished College 🎓 (Griffith College <i class="fi fi-ie" />)</h3>
+			<h3>Finished College 🎓</h3>
+			<p>(Griffith College <i class="fi fi-ie" />)</p>
 		</TimelineItem>
 		<TimelineItem date="2019">
 			<h3>Internship @ Amazon Web Services <i class="fa-brands fa-aws" /></h3>
 		</TimelineItem>
 		<TimelineItem date="2016">
-			<h3>Moved <i class="fi fi-hr" /> ➡️ <i class="fi fi-ie" /></h3>
+			<h3>
+				Moved <i class="fi fi-hr" /> <i class="fa-solid fa-right-long" /> <i class="fi fi-ie" />
+			</h3>
 		</TimelineItem>
 		<TimelineItem date="2016">
-			<h3>Finished high school 😎 (Gimnazija Pula <i class="fi fi-hr" />)</h3>
+			<h3>
+				Finished high school <i class="fa-solid fa-graduation-cap" />
+			</h3>
+			<p>
+				(Gimnazija Pula
+				<i class="fi fi-hr" />)
+			</p>
 		</TimelineItem>
 		<TimelineItem date="2012">
-			<h3>Finished primary school 🎒 (O.Š. Vidikovac <i class="fi fi-hr" />)</h3>
+			<h3>
+				Finished primary school <i class="fa-solid fa-school" />
+			</h3>
+			<p>
+				(O.Š. Vidikovac Pula
+				<i class="fi fi-hr" />)
+			</p>
 		</TimelineItem>
-		<TimelineItem title="Born 👶" date="1997" />
+		<TimelineItem date="1997">
+			<h3>Born <i class="fa-solid fa-baby" /></h3>
+		</TimelineItem>
 	</div>
 </Timeline>

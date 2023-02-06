@@ -4,6 +4,7 @@ Simple website that lists all my projects, articles and notable events.
 Powered by SvelteKit, Tailwind, DaisyUI, FlowBite, FontAwesome, Mailchimp, etc.
 
 Features:
+
 - Markdown - just add an `.md` file and new article page will be added
 - Plug and play UI components with Tailwind and DaisyUI - super easy for someone that's not proficient in frontend dev
 - Email subscription - using Mailchimp
@@ -52,7 +53,7 @@ You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
 
-## Deploying 
+## Deploying
 
 To deploy the production version to Github:
 
@@ -73,6 +74,7 @@ npm run format
 ```
 
 Then check with the linter:
+
 ```bash
 npm run lint
 ```

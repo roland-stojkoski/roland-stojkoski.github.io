@@ -34,10 +34,10 @@
 				tabindex="0"
 				class="menu menu-normal dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box"
 			>
-				<li><a href="{base}/">Homepage</a></li>
-				<li><a href="{base}/about">About</a></li>
-				<li><a href="{base}/attributions">Attributions</a></li>
-				<li><a href="{base}/contact">Contact</a></li>
+				<li><a href="{base}/"><i class="fa-solid fa-house" /> Homepage</a></li>
+				<li><a href="{base}/about"><i class="fa-solid fa-book" /> About</a></li>
+				<li><a href="{base}/attributions"><i class="fa-solid fa-medal" /> Attributions</a></li>
+				<li><a href="{base}/contact"><i class="fa-solid fa-envelope" /> Contact</a></li>
 			</ul>
 		</div>
 	</div>
