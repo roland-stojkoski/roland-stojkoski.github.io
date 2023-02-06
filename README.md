@@ -60,9 +60,9 @@ To deploy the production version to Github:
 npm run deploy
 ```
 
-Go to - https://github.com/<username>/<username>.github.io/deployments and check if the deployment succeeded.
+Go to - `https://github.com/<username>/<username>.github.io/deployments` and check if the deployment succeeded.
 
-Open https://<username>.github.io .
+Open `https://<username>.github.io`.
 
 ## Formatting
 
