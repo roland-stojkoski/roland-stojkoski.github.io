@@ -1,8 +1,12 @@
+<script>
+	import Container from '$lib/common/Container.svelte';
+</script>
+
 <svelte:head>
 	<title>RS - About</title>
 </svelte:head>
 
-<div class="container-implemented">
+<Container>
 	<h1>About me</h1>
 	<p>
 		I'm a System Development Engineer who loves all things tech and how it can make a positive
@@ -20,4 +24,4 @@
 		Take a look at my portfolio to see what I can bring to the table as a System Development
 		Engineer. Let's change the world, by committing to/the code!
 	</p>
-</div>
+</Container>

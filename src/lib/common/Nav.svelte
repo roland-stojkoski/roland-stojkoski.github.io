@@ -1,5 +1,4 @@
 <script>
-	import profilePic from '$lib/assets/rs-high-res-current-photo-cropped.jpg';
 	import { base } from '$app/paths';
 	import { Avatar } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
@@ -22,17 +21,18 @@
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
-					><path
+				>
+					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="2"
 						d="M4 6h16M4 12h16M4 18h7"
-					/></svg
-				>
+					/>
+				</svg>
 			</label>
 			<ul
 				tabindex="0"
-				class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+				class="menu menu-normal dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box"
 			>
 				<li><a href="{base}/">Homepage</a></li>
 				<li><a href="{base}/about">About</a></li>
@@ -42,8 +42,10 @@
 		</div>
 	</div>
 	<div class="navbar-center">
-		<Avatar class="mr-3" src={profilePic} rounded />
-		<span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+		<Avatar class="mr-3" src="/rs-high-res-current-photo-cropped.jpg" rounded />
+		<span
+			class="hidden self-center whitespace-nowrap text-xl font-semibold dark:text-white md:block"
+		>
 			Roland Stojkoski 👷‍♂️
 		</span>
 	</div>

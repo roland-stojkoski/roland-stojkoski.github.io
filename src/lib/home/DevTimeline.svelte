@@ -1,27 +1,64 @@
-<script>
+<script type="ts">
+	import { error } from '@sveltejs/kit';
 	import { Timeline, TimelineItem } from 'flowbite-svelte';
+	import type {
+		TimelineItemInterfaceParsed,
+		TimelineItemInterfaceRaw
+	} from './TimelineItemInterface';
+
+	export let items: TimelineItemInterfaceRaw[];
+
+	const parsedItems: TimelineItemInterfaceParsed[] = [];
+	items.forEach((part, index) => {
+		const mdPath = part.path
+			.split('/')
+			?.pop()
+			?.replace(/\.[^/.]+$/, '');
+
+		// TODO - Improve this error handling
+		if (!mdPath) {
+			throw error(
+				500,
+				`Issues with converting the path - <${part.path}>, to a link ☹️. Please report this to us 🙏`
+			);
+		}
+
+		parsedItems[index] = {
+			...part,
+			path: '/articles/'.concat(mdPath),
+			date: new Date(part.date)
+		};
+	});
+
+	parsedItems.sort((a: TimelineItemInterfaceParsed, b: TimelineItemInterfaceParsed): number => {
+		return b.date.getTime() - a.date.getTime();
+	});
 </script>
 
 <Timeline>
 	<div class="list-none">
-		<TimelineItem title="Sample project #2" date="February 2023">
-			<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
-				This is a sample project an it will include a TLDR
-			</p>
-			<button class="btn btn-primary" type="button">View article</button>
-			<button class="btn btn-primary" type="button"
-				>View on GitHub&nbsp;<i class="fa-brands fa-github" /></button
-			>
+		<TimelineItem date="♾️">
+			<p><i>... more to come 😀</i></p>
 		</TimelineItem>
-		<TimelineItem title="Sample project" date="January 2023">
-			<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
-				This is a sample project an it will include a TLDR
-			</p>
-			<button class="btn btn-primary" type="button">View article</button>
-			<button class="btn btn-primary" type="button"
-				>View on GitHub&nbsp;<i class="fa-brands fa-github" /></button
-			>
-		</TimelineItem>
+		{#each parsedItems as item}
+			<TimelineItem title={item.title} date={item.date.toDateString()}>
+				<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
+					{item.tldr}
+				</p>
+				<form>
+					<div class="btn-group btn-group-vertical">
+						<button class="btn btn-primary" formaction={item.path} type="submit"
+							>View article</button
+						>
+						{#if item.githubLink}
+							<button class="btn btn-primary" type="submit" formaction={item.githubLink}
+								>View on GitHub&nbsp;<i class="fa-brands fa-github" /></button
+							>
+						{/if}
+					</div>
+				</form>
+			</TimelineItem>
+		{/each}
 		<TimelineItem date="2022">
 			<h3>Promoted to SysDE II @ <i class="fa-brands fa-aws" /></h3>
 		</TimelineItem>
@@ -43,6 +80,6 @@
 		<TimelineItem date="2012">
 			<h3>Finished primary school 🎒 (O.Š. Vidikovac <i class="fi fi-hr" />)</h3>
 		</TimelineItem>
-		<TimelineItem title="Born 👶" date="September 1997" />
+		<TimelineItem title="Born 👶" date="1997" />
 	</div>
 </Timeline>
