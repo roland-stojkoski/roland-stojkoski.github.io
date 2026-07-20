@@ -1,13 +1,3 @@
-<script module lang="ts">
-	// Re-exported components are injected into every article's scope by
-	// mdsvex, so markdown can use <YouTube/>, <StlViewer/>, <Figure/> and
-	// <Compare/> without import statements.
-	export { default as YouTube } from './YouTube.svelte';
-	export { default as StlViewer } from './StlViewer.svelte';
-	export { default as Figure } from './Figure.svelte';
-	export { default as Compare } from './Compare.svelte';
-</script>
-
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';

@@ -15,23 +15,25 @@ pages) is derived from them at build time.
 - SvelteKit 2 + Svelte 5 (runes) + TypeScript, static adapter (prerendered)
 - Tailwind CSS 4 + daisyUI 5 (CSS-first config in `src/app.css`; custom themes
   `latte`/`espresso`)
-- mdsvex for markdown -> Svelte, with `src/lib/markdown/ArticleLayout.svelte`
-  as the layout that also injects article macros
+- mdsvex for markdown -> Svelte, wrapped by
+  `src/lib/markdown/ArticleLayout.svelte`; article macros are auto-imported
+  into every `.md` file by the `injectArticleMacros` preprocessor in
+  `svelte.config.js` (exports live in `src/lib/markdown/macros.ts`)
 - Vitest (+ Testing Library) for unit tests, Playwright for e2e, Storybook for
   component work
 
 ## Commands
 
-| Command                  | What                                          |
-| ------------------------ | --------------------------------------------- |
-| `npm run dev`            | dev server                                    |
-| `npm run build`          | production build (prerenders everything)      |
-| `npm run check`          | svelte-check / typecheck                      |
-| `npm run test:unit`      | vitest (watch; add `-- --run` for one-shot)   |
-| `npm run test:e2e`       | playwright (builds + previews automatically)  |
-| `npm run lint`           | prettier check + eslint                       |
-| `npm run format`         | prettier write                                |
-| `npm run storybook`      | storybook dev server                          |
+| Command             | What                                         |
+| ------------------- | -------------------------------------------- |
+| `npm run dev`       | dev server                                   |
+| `npm run build`     | production build (prerenders everything)     |
+| `npm run check`     | svelte-check / typecheck                     |
+| `npm run test:unit` | vitest (watch; add `-- --run` for one-shot)  |
+| `npm run test:e2e`  | playwright (builds + previews automatically) |
+| `npm run lint`      | prettier check + eslint                      |
+| `npm run format`    | prettier write                               |
+| `npm run storybook` | storybook dev server                         |
 
 Before pushing, make sure `npm run lint && npm run check && npm run test:unit -- --run && npm run build` all pass.
 

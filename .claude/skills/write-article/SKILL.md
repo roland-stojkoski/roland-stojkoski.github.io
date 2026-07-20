@@ -32,7 +32,9 @@ Start content with `##` sections, not an `# h1`.
 
 ### Macros (no imports needed)
 
-These components are auto-injected into every article:
+These components are auto-injected into every article (via the
+`injectArticleMacros` preprocessor in `svelte.config.js`; the export list
+lives in `src/lib/markdown/macros.ts`):
 
 ```markdown
 <YouTube id="dQw4w9WgXcQ" title="What the video is" />
