@@ -1,6 +1,6 @@
 ---
 title: 'Same site, three years later: a full modernization (with an AI pair programmer)'
-date: '7/20/2026'
+date: '2026-07-20'
 tldr: 'Svelte 5, Tailwind 4, markdown macros, tests, Storybook, CI — and how an AI agent helped rebuild it all in one session.'
 githubLink: 'https://github.com/roland-stojkoski/roland-stojkoski.github.io'
 tags: ['svelte', 'tailwind', 'modernization', 'ai']

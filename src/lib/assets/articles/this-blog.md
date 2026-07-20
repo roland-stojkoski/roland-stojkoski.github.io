@@ -1,6 +1,6 @@
 ---
 title: 'Today on "How it is made"... this website?'
-date: '2/6/2023'
+date: '2023-02-06'
 tldr: 'Process and design decisions behind this very website.'
 githubLink: 'https://github.com/roland-stojkoski/roland-stojkoski.github.io'
 tags: ['svelte', 'tailwind', 'portfolio', 'web']
