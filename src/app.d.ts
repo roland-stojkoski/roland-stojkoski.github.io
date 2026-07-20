@@ -1,9 +1,19 @@
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
-// and what to do when importing types
-declare namespace App {
-	// interface Error {}
-	// interface Locals {}
-	// interface PageData {}
-	// interface Platform {}
+// See https://svelte.dev/docs/kit/types#app.d.ts
+declare global {
+	namespace App {
+		// interface Error {}
+		// interface Locals {}
+		// interface PageData {}
+		// interface PageState {}
+		// interface Platform {}
+	}
 }
+
+declare module '*.md' {
+	import type { Component } from 'svelte';
+	const component: Component;
+	export default component;
+	export const metadata: Record<string, string>;
+}
+
+export {};

@@ -1,16 +1,17 @@
 <script lang="ts">
-	import Container from '$lib/common/Container.svelte';
+	import { site } from '$lib/config';
+	import type { PageData } from './$types';
 
-	export let data: {
-		component: string;
-		frontmatter: string;
-	};
+	let { data }: { data: PageData } = $props();
+
+	const Article = $derived(data.component);
 </script>
 
 <svelte:head>
-	<title>{data.frontmatter.title}</title>
+	<title>{data.frontmatter.title} · {site.title}</title>
+	{#if data.frontmatter.tldr}
+		<meta name="description" content={data.frontmatter.tldr} />
+	{/if}
 </svelte:head>
 
-<Container>
-	<svelte:component this={data.component} />
-</Container>
+<Article />

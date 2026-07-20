@@ -1,37 +1,45 @@
-<script>
-	import Container from '$lib/common/Container.svelte';
+<script lang="ts">
+	import { site } from '$lib/config';
+
+	const attributions = [
+		{
+			what: 'Favicon',
+			credit: 'Ide icons created by Flat Icons - Flaticon',
+			href: 'https://www.flaticon.com/free-icons/ide'
+		},
+		{
+			what: 'Markdown processing (inspired by)',
+			credit: 'mvasigh/sveltekit-mdsvex-blog',
+			href: 'https://github.com/mvasigh/sveltekit-mdsvex-blog'
+		},
+		{
+			what: 'Icons',
+			credit: 'Hand-drawn in the style of Lucide (ISC) and Simple Icons (CC0)',
+			href: 'https://lucide.dev'
+		},
+		{
+			what: 'Original home page photo (coffee cup, pre-2026 design)',
+			credit: 'Jakub Dziubak on Unsplash',
+			href: 'https://unsplash.com/photos/XtUd5SiX464'
+		}
+	];
 </script>
 
 <svelte:head>
-	<title>RS - Attributions</title>
+	<title>{site.title} · Attributions</title>
+	<meta name="description" content="Credits for assets and inspiration used on this website." />
 </svelte:head>
 
-<Container>
-	<div class="h-screen/2">
-		<h1>Attributions</h1>
+<div class="mx-auto max-w-3xl px-4 py-12">
+	<div class="prose prose-lg max-w-none">
+		<h1 class="font-mono">Attributions</h1>
+		<p>Credit where credit is due 🙏</p>
 		<ul>
-			<li>
-				Home page photo (coffee cup) by <a
-					href="https://unsplash.com/@jckbck?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-					>Jakub Dziubak</a
-				>
-				on
-				<a
-					href="https://unsplash.com/photos/XtUd5SiX464?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-					>Unsplash</a
-				>
-			</li>
-			<li>
-				Favicon - <a href="https://www.flaticon.com/free-icons/ide" title="ide icons"
-					>Ide icons created by Flat Icons - Flaticon</a
-				>
-			</li>
-			<li>
-				Markdown processing (inspired by) - <a
-					href="https://github.com/mvasigh/sveltekit-mdsvex-blog"
-					title="GitHub link">GitHub - mvasigh/sveltekit-mdsvex-blog</a
-				>
-			</li>
+			{#each attributions as item (item.what)}
+				<li>
+					{item.what} — <a href={item.href} target="_blank" rel="noreferrer">{item.credit}</a>
+				</li>
+			{/each}
 		</ul>
 	</div>
-</Container>
+</div>
