@@ -8,6 +8,11 @@ export default defineConfig({
 		reuseExistingServer: !process.env.CI
 	},
 	use: {
-		baseURL: 'http://localhost:4173'
+		baseURL: 'http://localhost:4173',
+		// Sandboxed environments can point at a system chromium instead of
+		// downloading browsers (e.g. CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium).
+		...(process.env.CHROMIUM_EXECUTABLE_PATH
+			? { launchOptions: { executablePath: process.env.CHROMIUM_EXECUTABLE_PATH } }
+			: {})
 	}
 });
