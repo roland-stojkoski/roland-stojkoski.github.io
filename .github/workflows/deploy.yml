@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/modernize-portfolio-website-2uqvy8]
   workflow_dispatch:
 
 permissions:
