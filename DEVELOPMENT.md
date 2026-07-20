@@ -112,6 +112,12 @@ Actions"). There is no manual deploy step.
 
 ## Troubleshooting
 
+- **`sh: playwright: command not found`** (or any missing binary from an npm
+  script) — dependencies aren't installed in this checkout; run `npm install`
+  first. Binaries live in `node_modules/.bin`, which only exists after an
+  install.
+- **`npm error Missing script: "vite"`** — the dev server script is
+  `npm run dev`, not `npm run vite`.
 - **Playwright: "Looks like Playwright was just installed"** — run
   `npx playwright install chromium`, or set `CHROMIUM_EXECUTABLE_PATH` to an
   existing Chromium binary.
