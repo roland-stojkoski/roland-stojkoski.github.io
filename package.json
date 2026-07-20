@@ -5,7 +5,11 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"prebuild": "node scripts/generate-planned.mjs",
 		"build": "vite build",
+		"planned": "node scripts/generate-planned.mjs",
+		"planned:check": "node scripts/generate-planned.mjs --check",
+		"prepare": "simple-git-hooks",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -16,6 +20,9 @@
 		"format": "prettier --write .",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "node scripts/generate-planned.mjs && git add PLANNED.md"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.0",
@@ -44,6 +51,7 @@
 		"prettier": "^3.9.5",
 		"prettier-plugin-svelte": "^4.1.1",
 		"prettier-plugin-tailwindcss": "^0.8.1",
+		"simple-git-hooks": "^2.13.1",
 		"storybook": "^10.5.2",
 		"svelte": "^5.56.6",
 		"svelte-check": "^4.7.3",

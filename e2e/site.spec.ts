@@ -37,6 +37,40 @@ test.describe('theme', () => {
 	});
 });
 
+test.describe('navigation', () => {
+	test('desktop shows the inline menu and hides the hamburger', async ({ page, isMobile }) => {
+		test.skip(isMobile, 'desktop only');
+		await page.goto('/');
+		await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
+		await page.getByRole('navigation').getByRole('link', { name: 'About' }).click();
+		await expect(page).toHaveURL(/\/about$/);
+	});
+
+	test('mobile navigates through the hamburger dropdown', async ({ page, isMobile }) => {
+		test.skip(!isMobile, 'mobile only');
+		await page.goto('/');
+		const hamburger = page.getByRole('button', { name: 'Open menu' });
+		await expect(hamburger).toBeVisible();
+		await hamburger.click();
+		await page.getByRole('link', { name: /about/i }).click();
+		await expect(page).toHaveURL(/\/about$/);
+		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+	});
+
+	test('mobile hero and timeline render without horizontal overflow', async ({
+		page,
+		isMobile
+	}) => {
+		test.skip(!isMobile, 'mobile only');
+		await page.goto('/');
+		await expect(page.getByRole('heading', { name: /hi, i'm roland/i })).toBeVisible();
+		const overflow = await page.evaluate(
+			() => document.documentElement.scrollWidth - document.documentElement.clientWidth
+		);
+		expect(overflow).toBeLessThanOrEqual(1);
+	});
+});
+
 test.describe('static pages', () => {
 	for (const path of ['/about', '/attributions', '/contact']) {
 		test(`renders ${path}`, async ({ page }) => {

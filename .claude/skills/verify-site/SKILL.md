@@ -8,15 +8,21 @@ description: Verify the site end-to-end before pushing - lint, typecheck, unit t
 Run in this order (fail fast on the cheap ones):
 
 ```bash
+npm run planned:check   # PLANNED.md codetag section must be current
 npm run lint
 npm run check
 npm run test:unit -- --run
 npm run build
-npm run test:e2e   # builds + previews automatically
+npm run test:e2e        # builds + previews automatically; runs desktop AND mobile projects
 ```
+
+If `planned:check` fails, run `npm run planned` and commit the result (the
+pre-commit hook normally does this automatically).
 
 If Playwright cannot download browsers (sandboxed environments), point it at
 a system chromium: `CHROMIUM_EXECUTABLE_PATH=/path/to/chromium npm run test:e2e`.
+Run a single viewport with `npx playwright test --project=mobile` (or
+`--project=desktop`).
 
 ## Visual check
 

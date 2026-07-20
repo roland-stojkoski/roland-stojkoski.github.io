@@ -16,7 +16,8 @@ Features:
   paint, persisted, synced to embeds
 - **Comments** — [giscus](https://giscus.app) (GitHub Discussions), enabled
   once `repoId`/`categoryId` are filled in `src/lib/config.ts`
-- **Tests** — Vitest unit suite, Playwright e2e, Storybook for components
+- **Tests** — Vitest unit suite, Playwright e2e on desktop + mobile
+  viewports, Storybook for components
 - **CI/CD** — GitHub Actions checks every PR and deploys `main` to Pages
 - **Agent-ready** — see [`AGENTS.md`](AGENTS.md) and `.claude/skills/`
 
@@ -48,6 +49,11 @@ npm run dev          # dev server
 npm run build        # production build (prerendered to build/)
 npm run preview      # serve the production build
 ```
+
+Full setup, testing and troubleshooting guide:
+[`DEVELOPMENT.md`](DEVELOPMENT.md). Planned work and tracked compromises:
+[`PLANNED.md`](PLANNED.md) (codetag section regenerates on every build and
+commit).
 
 ## Quality checks
 

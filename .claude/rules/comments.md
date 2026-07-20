@@ -17,3 +17,9 @@ cannot:
 Never write comments that narrate the next line, restate a name, or explain
 why a change is correct (that belongs in the PR/commit, not the code). When
 editing code with such comments, delete them.
+
+CODETAG comments are harvested into `PLANNED.md` by
+`scripts/generate-planned.mjs` (runs on every build and commit; CI fails if
+the file is stale). Because the scanner is line-based, make the tag's first
+line a self-contained summary. Resolving a codetag = delete the comment; the
+next regeneration drops it from `PLANNED.md` automatically.

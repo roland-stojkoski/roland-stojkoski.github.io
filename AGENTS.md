@@ -19,8 +19,11 @@ pages) is derived from them at build time.
   `src/lib/markdown/ArticleLayout.svelte`; article macros are auto-imported
   into every `.md` file by the `injectArticleMacros` preprocessor in
   `svelte.config.js` (exports live in `src/lib/markdown/macros.ts`)
-- Vitest (+ Testing Library) for unit tests, Playwright for e2e, Storybook for
-  component work
+- Vitest (+ Testing Library) for unit tests, Playwright for e2e (desktop AND
+  mobile projects — both run on every `test:e2e`), Storybook for component
+  work
+
+Developer setup and troubleshooting live in `DEVELOPMENT.md`.
 
 ## Commands
 
@@ -34,8 +37,25 @@ pages) is derived from them at build time.
 | `npm run lint`      | prettier check + eslint                      |
 | `npm run format`    | prettier write                               |
 | `npm run storybook` | storybook dev server                         |
+| `npm run planned`   | regenerate the codetag section of PLANNED.md |
 
 Before pushing, make sure `npm run lint && npm run check && npm run test:unit -- --run && npm run build` all pass.
+
+## PLANNED.md (planned work & tracked compromises)
+
+`PLANNED.md` tracks work in two sections:
+
+- **Backlog** — manually curated list; edit it when scope is agreed with the
+  owner (add items for deferred work, remove items you complete).
+- **Codetags** — auto-generated between the `codetag-scan` markers from
+  `TODO`/`FIXME`/`HACK`/`XXX`/`NOTE` comments across all tracked files
+  (`scripts/generate-planned.mjs`). Never hand-edit this section.
+
+Regeneration is automatic: `prebuild` hook on every build, a `pre-commit`
+git hook (installed by `npm install`) that re-stages the file, and a CI
+check (`npm run planned:check`) that fails stale PRs. So: accept a
+compromise → leave a CODETAG comment; resolve one → delete the comment; the
+file follows along.
 
 ## Architecture map
 
