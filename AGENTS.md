@@ -1,0 +1,92 @@
+# Agent guide
+
+Canonical instructions for AI coding agents working on this repository.
+(`CLAUDE.md` points here; keep this file tool-agnostic.)
+
+## What this is
+
+Roland Stojkoski's portfolio website — a fully static SvelteKit site deployed
+to GitHub Pages. Markdown is the source of truth: articles live in
+`src/lib/assets/articles/*.md` and everything else (timeline, RSS, article
+pages) is derived from them at build time.
+
+## Stack
+
+- SvelteKit 2 + Svelte 5 (runes) + TypeScript, static adapter (prerendered)
+- Tailwind CSS 4 + daisyUI 5 (CSS-first config in `src/app.css`; custom themes
+  `latte`/`espresso`)
+- mdsvex for markdown -> Svelte, with `src/lib/markdown/ArticleLayout.svelte`
+  as the layout that also injects article macros
+- Vitest (+ Testing Library) for unit tests, Playwright for e2e, Storybook for
+  component work
+
+## Commands
+
+| Command                  | What                                          |
+| ------------------------ | --------------------------------------------- |
+| `npm run dev`            | dev server                                    |
+| `npm run build`          | production build (prerenders everything)      |
+| `npm run check`          | svelte-check / typecheck                      |
+| `npm run test:unit`      | vitest (watch; add `-- --run` for one-shot)   |
+| `npm run test:e2e`       | playwright (builds + previews automatically)  |
+| `npm run lint`           | prettier check + eslint                       |
+| `npm run format`         | prettier write                                |
+| `npm run storybook`      | storybook dev server                          |
+
+Before pushing, make sure `npm run lint && npm run check && npm run test:unit -- --run && npm run build` all pass.
+
+## Architecture map
+
+- `src/lib/config.ts` — site metadata, social links, giscus config
+- `src/lib/data/timeline.ts` — non-article life events shown on the timeline
+- `src/lib/utils/` — pure logic (article parsing, theme handling); keep logic
+  here so it stays unit-testable
+- `src/lib/components/` — UI components; icons are inline SVGs in `icons.ts`
+- `src/lib/markdown/` — article layout + macros (`YouTube`, `StlViewer`,
+  `Figure`, `Compare`) and the giscus comments embed
+- `src/routes/` — pages; articles are served by `articles/[slug]`
+- `static/` — served as-is; per-article assets go in `static/<slug>/`
+
+## Writing conventions
+
+### Commits
+
+Semantic commits, all lowercase, imperative mood:
+
+```
+feat: add stl viewer macro
+fix: keep theme across reloads
+docs: explain article frontmatter
+test: cover timeline merging
+chore: bump dependencies
+refactor: extract theme helpers
+```
+
+Scope is optional (`feat(timeline): ...`). Subject line ≤ 72 chars, body
+explains why (not what) when the diff alone isn't obvious.
+
+### Code comments
+
+Comment only what the code cannot say:
+
+- non-obvious constraints, invariants or complexity that is there by design
+- known-but-accepted compromises — tag these with CODETAGS: `TODO`, `HACK`,
+  `FIXME`, `XXX`, `NOTE`
+- never narrate what a line does, why a change is correct, or where code came
+  from; if a comment restates the code, delete it
+
+### Style
+
+- Prettier + ESLint are authoritative; run `npm run format` rather than
+  hand-formatting
+- Svelte 5 runes (`$props()`, `$state`, `$derived`) — no legacy `export let`
+- Keep display components thin; put branching logic in `src/lib/utils/` with
+  tests
+
+## Adding an article
+
+See `.claude/skills/write-article/SKILL.md` for the full walkthrough
+(frontmatter shape, macros, screenshots, checklist). Short version: drop a
+`.md` file with `title`/`date`/`tldr` frontmatter into
+`src/lib/assets/articles/` and the timeline, article page and RSS feed pick it
+up automatically.
