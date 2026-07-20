@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('home page', () => {
 	test('renders the hero and timeline', async ({ page }) => {
 		await page.goto('/');
-		await expect(page.getByRole('heading', { name: /hi, i'm roland/i })).toBeVisible();
+		await expect(page.getByRole('heading', { name: /hi, i'm (roland|roly)/i })).toBeVisible();
 		await expect(page.locator('#timeline')).toBeVisible();
 		await expect(page.getByText('Promoted to SysDE II @ AWS')).toBeVisible();
 	});
@@ -43,7 +43,7 @@ test.describe('navigation', () => {
 		await page.goto('/');
 		await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
 		await page.getByRole('navigation').getByRole('link', { name: 'About' }).click();
-		await expect(page).toHaveURL(/\/about$/);
+		await expect(page).toHaveURL(/\/about\/?$/);
 	});
 
 	test('mobile navigates through the hamburger dropdown', async ({ page, isMobile }) => {
@@ -53,7 +53,7 @@ test.describe('navigation', () => {
 		await expect(hamburger).toBeVisible();
 		await hamburger.click();
 		await page.getByRole('link', { name: /about/i }).click();
-		await expect(page).toHaveURL(/\/about$/);
+		await expect(page).toHaveURL(/\/about\/?$/);
 		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 	});
 
@@ -63,7 +63,7 @@ test.describe('navigation', () => {
 	}) => {
 		test.skip(!isMobile, 'mobile only');
 		await page.goto('/');
-		await expect(page.getByRole('heading', { name: /hi, i'm roland/i })).toBeVisible();
+		await expect(page.getByRole('heading', { name: /hi, i'm (roland|roly)/i })).toBeVisible();
 		const overflow = await page.evaluate(
 			() => document.documentElement.scrollWidth - document.documentElement.clientWidth
 		);
@@ -72,7 +72,7 @@ test.describe('navigation', () => {
 });
 
 test.describe('static pages', () => {
-	for (const path of ['/about', '/attributions', '/contact']) {
+	for (const path of ['/about', '/attributions', '/contact', '/articles']) {
 		test(`renders ${path}`, async ({ page }) => {
 			await page.goto(path);
 			await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

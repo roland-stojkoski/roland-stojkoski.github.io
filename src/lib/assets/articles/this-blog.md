@@ -3,6 +3,8 @@ title: 'Today on "How it is made"... this website?'
 date: '2/6/2023'
 tldr: 'Process and design decisions behind this very website.'
 githubLink: 'https://github.com/roland-stojkoski/roland-stojkoski.github.io'
+tags: ['svelte', 'tailwind', 'portfolio', 'web']
+image: '/this-blog/cover.png'
 ---
 
 # How does this website you are reading this heading from - work?

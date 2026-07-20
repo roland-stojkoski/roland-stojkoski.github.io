@@ -3,6 +3,8 @@ export interface ArticleMetadata {
 	date: string;
 	tldr: string;
 	githubLink?: string;
+	tags?: string[];
+	image?: string;
 }
 
 export interface Article {
@@ -13,6 +15,8 @@ export interface Article {
 	date: Date;
 	tldr: string;
 	githubLink?: string;
+	tags?: string[];
+	image?: string;
 }
 
 export function slugFromPath(path: string): string | null {
@@ -35,7 +39,9 @@ export function articleFromModule(path: string, metadata: ArticleMetadata): Arti
 		title: metadata.title,
 		date,
 		tldr: metadata.tldr,
-		githubLink: metadata.githubLink
+		githubLink: metadata.githubLink,
+		tags: metadata.tags || [],
+		image: metadata.image
 	};
 }
 

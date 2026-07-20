@@ -3,6 +3,8 @@ title: 'Same site, three years later: a full modernization (with an AI pair prog
 date: '7/20/2026'
 tldr: 'Svelte 5, Tailwind 4, markdown macros, tests, Storybook, CI — and how an AI agent helped rebuild it all in one session.'
 githubLink: 'https://github.com/roland-stojkoski/roland-stojkoski.github.io'
+tags: ['svelte', 'tailwind', 'modernization', 'ai']
+image: '/modernize-2026/cover.png'
 ---
 
 ## Why touch a working website?
@@ -49,9 +51,19 @@ The old theme toggle was flaky: the choice lived only in a checkbox and the
 page could flash the wrong theme on load. The new setup resolves the theme
 before first paint (stored preference, falling back to
 `prefers-color-scheme`), persists it in `localStorage`, and broadcasts
-changes so embedded widgets can follow along. There is a Playwright test that
-toggles, reloads and checks it stuck — flakiness is now a regression, not a
-mood.
+changes so embedded widgets can follow along.
+
+To resolve the theme before the initial Svelte paint and prevent visual flashing, we inject a blocker script directly in `src/app.html`:
+
+```javascript
+// Prevent Flash of Unstyled Content (FOUC)
+const theme =
+	localStorage.getItem('theme') ||
+	(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'espresso' : 'latte');
+document.documentElement.setAttribute('data-theme', theme);
+```
+
+There is a Playwright test that toggles, reloads and checks it stuck — flakiness is now a regression, not a mood.
 
 ## Markdown macros
 
@@ -67,7 +79,7 @@ An in-browser 3D viewer for STL files — three.js, lazy-loaded on the client,
 running fine within GitHub Pages' static confines. No server, no WebAssembly
 needed, just WebGL:
 
-<StlViewer src="/modernize-2026/torus-knot.stl" caption="A torus knot, because every 3D demo is legally required to have one" />
+<StlViewer src="/modernize-2026/mushroom.stl" caption="A 3D render of a mushroom, demonstrating lazy-loaded WebGL STL parsing on static hosting" />
 
 Plus `<Figure>` for captioned images and the `<Compare>` slider you already
 used above.
@@ -78,6 +90,29 @@ used above.
   logic, timeline merging and every component — including one that would have
   caught the classic "icon name doesn't exist" bug I hit while building it.
 - **Playwright** smoke-tests the built site: navigation, both themes, RSS.
+
+Here is the Playwright E2E test verifying that the theme toggles and survives page reloads:
+
+```typescript
+test('theme toggle switches theme and survives reload', async ({ page }) => {
+	await page.goto('/');
+	const toggle = page.getByRole('button', { name: 'Toggle theme' });
+	const initialTheme = await page.evaluate(() =>
+		document.documentElement.getAttribute('data-theme')
+	);
+
+	await toggle.click();
+	const newTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+	expect(newTheme).not.toBe(initialTheme);
+
+	await page.reload();
+	const reloadedTheme = await page.evaluate(() =>
+		document.documentElement.getAttribute('data-theme')
+	);
+	expect(reloadedTheme).toBe(newTheme);
+});
+```
+
 - **Storybook** hosts every component with a theme switcher in the toolbar,
   so design work doesn't require clicking through the whole site.
 - **GitHub Actions** runs all of it on every PR and deploys `main` straight

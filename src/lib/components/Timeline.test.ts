@@ -28,11 +28,8 @@ describe('Timeline', () => {
 		render(Timeline, { entries });
 		expect(screen.getByText('Demo article')).toBeInTheDocument();
 		expect(screen.getByText('Just a demo.')).toBeInTheDocument();
-		expect(screen.getByRole('link', { name: /read article/i })).toHaveAttribute(
-			'href',
-			'/articles/demo'
-		);
-		expect(screen.getByRole('link', { name: /github/i })).toHaveAttribute(
+		expect(screen.getByRole('link', { name: /read/i })).toHaveAttribute('href', '/articles/demo');
+		expect(screen.getByRole('link', { name: /repo/i })).toHaveAttribute(
 			'href',
 			'https://github.com/example/demo'
 		);

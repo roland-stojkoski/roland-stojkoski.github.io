@@ -8,6 +8,7 @@
 			"Bash(npm run test:unit -- --run)",
 			"Bash(npm run test:e2e)",
 			"Bash(npm run build-storybook)",
+			"Bash(npm run verify)",
 			"Bash(npx vitest run:*)",
 			"Bash(npx playwright test:*)"
 		]

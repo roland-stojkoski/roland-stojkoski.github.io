@@ -71,7 +71,7 @@
 }
 
 @theme {
-	--font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 	--font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', monospace;
 }
 
@@ -80,11 +80,18 @@
 		scroll-behavior: smooth;
 	}
 
+	body {
+		font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+	}
+
 	h1,
 	h2,
 	h3,
-	h4 {
-		font-family: var(--font-mono);
+	h4,
+	h5,
+	h6 {
+		font-family: 'Space Grotesk', sans-serif;
+		font-weight: 700;
 	}
 }
 
@@ -122,4 +129,128 @@
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent;
+}
+
+/* Accessibility custom styles */
+.force-underline a,
+html.force-underline a {
+	text-decoration: underline !important;
+}
+
+/* Google Translate visual styling adjustments */
+.goog-te-gadget {
+	font-family: inherit !important;
+	font-size: 13px !important;
+}
+.goog-te-gadget-simple {
+	background-color: var(--color-base-100) !important;
+	border: 1px solid var(--color-base-300) !important;
+	border-radius: var(--radius-field) !important;
+	padding: 6px 12px !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	cursor: pointer !important;
+	color: var(--color-base-content) !important;
+	transition: all 0.2s ease !important;
+}
+.goog-te-gadget-simple:hover {
+	border-color: var(--color-primary) !important;
+	background-color: var(--color-base-200) !important;
+}
+.goog-te-gadget-simple img {
+	display: none !important; /* Hide Google logo */
+}
+.goog-te-gadget-simple span {
+	color: var(--color-base-content) !important;
+}
+.goog-te-menu-value {
+	margin: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+}
+.goog-te-menu-value > span:not(:first-child) {
+	display: none !important; /* Hide Google's built-in border and down arrow */
+}
+.goog-te-menu-value::after {
+	content: '▼';
+	font-size: 9px;
+	opacity: 0.5;
+	margin-left: 8px;
+}
+.skiptranslate iframe {
+	visibility: hidden !important;
+	display: none !important;
+}
+body {
+	top: 0px !important;
+}
+
+/* Code block styling and syntax highlighting (Prism theme using site variables) */
+.prose pre {
+	background-color: var(--color-base-200) !important;
+	border: 1px solid var(--color-base-300) / 40 !important;
+	border-radius: var(--radius-box) !important;
+	padding: 1.25rem !important;
+	overflow-x: auto;
+}
+.prose code {
+	font-size: 0.875rem !important;
+	font-family: var(--font-mono) !important;
+	background: transparent !important;
+	padding: 0 !important;
+	color: var(--color-base-content) !important;
+}
+
+/* Syntax Token Colors mapped to active theme colors */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: var(--color-base-content);
+	opacity: 0.45;
+	font-style: italic;
+}
+.token.punctuation {
+	color: var(--color-base-content);
+	opacity: 0.8;
+}
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: var(--color-secondary);
+}
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: var(--color-accent);
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: var(--color-base-content);
+	opacity: 0.9;
+}
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: var(--color-primary);
+	font-weight: 600;
+}
+.token.function,
+.token.class-name {
+	color: var(--color-primary);
+}
+.token.regex,
+.token.important,
+.token.variable {
+	color: var(--color-warning);
 }

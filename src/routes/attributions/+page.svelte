@@ -21,6 +21,21 @@
 			what: 'Original home page photo (coffee cup, pre-2026 design)',
 			credit: 'Jakub Dziubak on Unsplash',
 			href: 'https://unsplash.com/photos/XtUd5SiX464'
+		},
+		{
+			what: 'Mushroom 3D Model (STL)',
+			credit: 'BSGMatt/python-renderer-BSGMatt (MIT)',
+			href: 'https://github.com/BSGMatt/python-renderer-BSGMatt'
+		},
+		{
+			what: 'Translation & Accessibility Widget',
+			credit: 'Google Translate Web Element',
+			href: 'https://translate.google.com'
+		},
+		{
+			what: 'Brand Fonts (Space Grotesk, Plus Jakarta Sans)',
+			credit: 'Florian Karsten & Tokotype (OFL)',
+			href: 'https://fonts.google.com'
 		}
 	];
 </script>

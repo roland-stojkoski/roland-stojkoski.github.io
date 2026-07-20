@@ -97,6 +97,26 @@ export const icons = {
 	award: {
 		type: 'stroke',
 		svg: '<circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/>'
+	},
+	rss: {
+		type: 'stroke',
+		svg: '<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>'
+	},
+	'chevron-left': {
+		type: 'stroke',
+		svg: '<path d="m15 18-6-6 6-6"/>'
+	},
+	'chevron-right': {
+		type: 'stroke',
+		svg: '<path d="m9 18 6-6-6-6"/>'
+	},
+	'chevron-up': {
+		type: 'stroke',
+		svg: '<path d="m18 15-6-6-6 6"/>'
+	},
+	'chevron-down': {
+		type: 'stroke',
+		svg: '<path d="m6 9 6 6 6-6"/>'
 	}
 } as const satisfies Record<string, IconDefinition>;
 

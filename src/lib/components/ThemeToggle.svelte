@@ -18,7 +18,7 @@
 
 <button
 	type="button"
-	class="btn btn-circle btn-ghost"
+	class="btn btn-square rounded-lg btn-ghost"
 	onclick={toggle}
 	aria-label={theme === DARK_THEME ? 'Switch to light theme' : 'Switch to dark theme'}
 	title="Toggle theme"

@@ -8,10 +8,11 @@
 	},
 	"scripts": {
 		"dev": "vite dev",
-		"prebuild": "node scripts/generate-planned.mjs",
+		"prebuild": "node scripts/generate-planned.mjs && node scripts/sync-agents.mjs",
 		"build": "vite build",
 		"planned": "node scripts/generate-planned.mjs",
 		"planned:check": "node scripts/generate-planned.mjs --check",
+		"sync-agents": "node scripts/sync-agents.mjs",
 		"prepare": "simple-git-hooks",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -21,11 +22,12 @@
 		"test:e2e": "playwright test",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
+		"verify": "npm run format && npm run lint && npm run check && npm run test:unit -- --run && npm run build && npm run test:e2e && npm run planned && node scripts/capture-screenshots.mjs",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
 	},
 	"simple-git-hooks": {
-		"pre-commit": "node scripts/generate-planned.mjs && git add PLANNED.md"
+		"pre-commit": "node scripts/generate-planned.mjs && node scripts/sync-agents.mjs && git add PLANNED.md .claude/ .agents/"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.0",

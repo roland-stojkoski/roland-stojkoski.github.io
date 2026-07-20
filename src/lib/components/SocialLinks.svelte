@@ -13,7 +13,7 @@
 <div class="flex items-center gap-1 {className}">
 	{#each socials as social (social.name)}
 		<a
-			class="btn btn-circle btn-ghost"
+			class="btn btn-square rounded-lg btn-ghost"
 			href={social.href}
 			target="_blank"
 			rel="noreferrer"

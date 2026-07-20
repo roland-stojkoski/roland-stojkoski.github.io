@@ -2,16 +2,51 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import SocialLinks from '$lib/components/SocialLinks.svelte';
 	import { site } from '$lib/config';
+	import { onMount } from 'svelte';
 
 	const contactFormUrl =
 		'https://us13.list-manage.com/contact-form?u=9686f238f91d4f6de32382fe3&form_id=c320ff8e1d9e488ffacec0a4404b6ee7';
 	const subscribeUrl =
 		'https://github.us13.list-manage.com/subscribe/post?u=9686f238f91d4f6de32382fe3&id=cf994d4ec5&f_id=002cdbe2f0';
+
+	let rssUrl = $state('https://rolandstojkoski.github.io/rss.xml');
+	let rssCopied = $state(false);
+
+	onMount(() => {
+		rssUrl = `${window.location.origin}/rss.xml`;
+	});
+
+	async function copyRssUrl() {
+		try {
+			await navigator.clipboard.writeText(rssUrl);
+			rssCopied = true;
+			setTimeout(() => {
+				rssCopied = false;
+			}, 2000);
+		} catch (err) {
+			console.error('Failed to copy RSS URL:', err);
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>{site.title} · Contact</title>
 	<meta name="description" content="Get in touch with Roland Stojkoski or subscribe for updates." />
+	<meta property="og:title" content="Contact Roland Stojkoski · Systems Development Engineer" />
+	<meta
+		property="og:description"
+		content="Get in touch with Roland Stojkoski. Submit a message, find social profiles, or subscribe to the RSS feed."
+	/>
+	<meta property="og:url" content="{site.url}/contact" />
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content="{site.url}/rs-high-res-current-photo-cropped.jpg" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="Contact Roland Stojkoski · Systems Development Engineer" />
+	<meta
+		name="twitter:description"
+		content="Get in touch with Roland Stojkoski. Submit a message, find social profiles, or subscribe to the RSS feed."
+	/>
+	<meta name="twitter:image" content="{site.url}/rs-high-res-current-photo-cropped.jpg" />
 </svelte:head>
 
 <div class="mx-auto max-w-3xl space-y-8 px-4 py-12">
@@ -69,6 +104,97 @@
 						/>
 					</div>
 				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- RSS Feed Access -->
+	<div class="card w-full border border-base-300/60 bg-base-200 shadow-sm">
+		<div class="card-body">
+			<h2 class="card-title font-mono">
+				<Icon name="rss" size={18} class="text-primary" /> RSS Feed
+			</h2>
+			<div class="mt-2 grid items-start gap-6 md:grid-cols-3">
+				<div class="space-y-3 text-sm text-base-content/70 md:col-span-2">
+					<p>
+						Prefer not to share your email? Subscribe directly using the **RSS Feed**. RSS allows
+						you to read updates in a feed reader app without any tracking, algorithms, or email
+						subscription spam.
+					</p>
+					<div class="flex flex-wrap items-center gap-2 pt-1">
+						<span
+							class="block max-w-full truncate rounded-lg border border-base-300/30 bg-base-300/50 px-3 py-1.5 font-mono text-xs select-all"
+						>
+							{rssUrl}
+						</span>
+						<button
+							class="btn flex items-center gap-1.5 rounded-lg btn-outline btn-sm"
+							onclick={copyRssUrl}
+						>
+							{#if rssCopied}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									width="12"
+									height="12"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="3"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg
+								>
+								Copied!
+							{:else}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									width="12"
+									height="12"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									><path
+										d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+									></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg
+								>
+								Copy URL
+							{/if}
+						</button>
+					</div>
+				</div>
+				<div class="space-y-2 rounded-xl border border-base-300/30 bg-base-300/20 p-4">
+					<span class="block font-mono text-[10px] font-bold tracking-wider uppercase opacity-60"
+						>// quick links</span
+					>
+					<div class="flex flex-col gap-2 text-xs">
+						<a
+							href="/rss.xml"
+							target="_blank"
+							class="flex link items-center gap-1.5 text-base-content/85 link-hover hover:text-primary"
+						>
+							<Icon name="file-text" size={13} /> Open Raw XML Feed
+						</a>
+						<a
+							href="https://feedly.com"
+							target="_blank"
+							rel="noreferrer"
+							class="flex link items-center gap-1.5 text-base-content/85 link-hover hover:text-primary"
+						>
+							<Icon name="arrow-up-right" size={13} /> Feedly (Web/Mobile)
+						</a>
+						<a
+							href="https://netnewswire.com"
+							target="_blank"
+							rel="noreferrer"
+							class="flex link items-center gap-1.5 text-base-content/85 link-hover hover:text-primary"
+						>
+							<Icon name="arrow-up-right" size={13} /> NetNewsWire (Mac/iOS)
+						</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
