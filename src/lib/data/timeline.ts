@@ -46,7 +46,7 @@ export const lifeEvents: LifeEvent[] = [
 		kind: 'event',
 		date: new Date(2022, 11, 17),
 		dateLabel: '2022',
-		title: 'Croatia third place in World Cup',
+		title: 'Croatia third place in World Cup ⚽🥉',
 		icon: 'award'
 	},
 	{
@@ -82,7 +82,7 @@ export const lifeEvents: LifeEvent[] = [
 		kind: 'event',
 		date: new Date(2018, 6, 15),
 		dateLabel: '2018',
-		title: 'Croatia second place in World Cup',
+		title: 'Croatia second place in World Cup ⚽🥈',
 		icon: 'award'
 	},
 	{
@@ -116,6 +116,13 @@ export const lifeEvents: LifeEvent[] = [
 		subtitle:
 			'At age 10, realized we are all just confused animals on a floating rock. At least we have Wi-Fi.',
 		icon: 'infinity'
+	},
+	{
+		kind: 'event',
+		date: new Date(1998, 6, 11),
+		dateLabel: '1998',
+		title: 'Croatia third place in World Cup ⚽🥉',
+		icon: 'award'
 	},
 	{
 		kind: 'event',
