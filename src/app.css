@@ -137,8 +137,10 @@ html.force-underline a {
 	text-decoration: underline !important;
 }
 
-/* Dyslexia-friendly font: must out-specify the hardcoded body/heading
-   font-families above, hence the !important. Code blocks stay monospace. */
+/* Dyslexia-friendly font: OpenDyslexic is self-hosted (fontsource) because
+   fallbacks like Comic Sans don't exist on android/linux, where the toggle
+   would otherwise change nothing. !important out-specifies the hardcoded
+   body/heading font-families above. Code blocks stay monospace. */
 html.dyslexic-font body,
 html.dyslexic-font h1,
 html.dyslexic-font h2,
@@ -146,7 +148,7 @@ html.dyslexic-font h3,
 html.dyslexic-font h4,
 html.dyslexic-font h5,
 html.dyslexic-font h6 {
-	font-family: 'Comic Sans MS', 'Comic Sans', 'Trebuchet MS', Verdana, sans-serif !important;
+	font-family: 'OpenDyslexic', 'Comic Sans MS', 'Comic Sans', sans-serif !important;
 	letter-spacing: 0.02em;
 }
 

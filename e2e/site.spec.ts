@@ -102,8 +102,14 @@ test.describe('accessibility menu', () => {
 		await page.getByRole('button', { name: 'Accessibility Settings' }).click();
 		await page.getByLabel('Dyslexia Font').click();
 		await expect(page.locator('html')).toHaveClass(/dyslexic-font/);
-		const font = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
-		expect(font).toContain('Comic Sans');
+		// document.fonts.check only returns true once the font file has
+		// actually loaded and applies, so this fails if the family is
+		// missing on the platform (the computed style alone would not).
+		const fontLoaded = await page.evaluate(async () => {
+			await document.fonts.ready;
+			return document.fonts.check('16px OpenDyslexic');
+		});
+		expect(fontLoaded).toBe(true);
 		await page.reload();
 		await expect(page.locator('html')).toHaveClass(/dyslexic-font/);
 	});
