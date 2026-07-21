@@ -95,3 +95,16 @@ test.describe('static pages', () => {
 		expect(await response.text()).toContain('<rss version="2.0">');
 	});
 });
+
+test.describe('accessibility menu', () => {
+	test('dyslexia font toggle changes the body font and survives reload', async ({ page }) => {
+		await page.goto('/');
+		await page.getByRole('button', { name: 'Accessibility Settings' }).click();
+		await page.getByLabel('Dyslexia Font').click();
+		await expect(page.locator('html')).toHaveClass(/dyslexic-font/);
+		const font = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
+		expect(font).toContain('Comic Sans');
+		await page.reload();
+		await expect(page.locator('html')).toHaveClass(/dyslexic-font/);
+	});
+});

@@ -1,162 +1,96 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import {
+		DYSLEXIC_CLASS,
+		DYSLEXIC_KEY,
+		FONT_SIZE_CLASSES,
+		FONT_SIZE_KEY,
+		UNDERLINE_CLASS,
+		UNDERLINE_KEY,
+		isFontSize,
+		pageLanguage,
+		pickVoice,
+		type FontSize
+	} from '$lib/utils/a11y';
 
 	let isOpen = $state(false);
-	let fontSize = $state('normal'); // 'small', 'normal', 'large', 'xl'
+	let fontSize = $state<FontSize>('normal');
 	let dyslexicFont = $state(false);
 	let underlineLinks = $state(false);
 	let isSpeaking = $state(false);
 
-	// Load settings from localStorage on mount
 	onMount(() => {
-		fontSize = localStorage.getItem('a11y-font-size') || 'normal';
-		dyslexicFont = localStorage.getItem('a11y-dyslexic') === 'true';
-		underlineLinks = localStorage.getItem('a11y-underline') === 'true';
+		const stored = localStorage.getItem(FONT_SIZE_KEY);
+		fontSize = isFontSize(stored) ? stored : 'normal';
+		dyslexicFont = localStorage.getItem(DYSLEXIC_KEY) === 'true';
+		underlineLinks = localStorage.getItem(UNDERLINE_KEY) === 'true';
 		applySettings();
 
+		// Chrome populates the voice list lazily; requesting it early makes
+		// voices available by the time the user hits play.
+		window.speechSynthesis?.getVoices();
+
+		setupTranslate();
+
+		return () => {
+			window.speechSynthesis?.cancel();
+		};
+	});
+
+	function setupTranslate() {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const win = window as any;
 
-		const initTranslate = () => {
-			console.log(
-				'initTranslate triggered. win.google exists:',
-				!!win.google,
-				'win.google.translate exists:',
-				!!(win.google && win.google.translate)
+		// The default (non-SIMPLE) layout renders a native <select>, which
+		// mobile browsers open in a scrollable OS picker — the SIMPLE layout's
+		// iframe menu cannot scroll on touch devices.
+		const init = (): boolean => {
+			if (!win.google?.translate?.TranslateElement) return false;
+			const container = document.getElementById('google_translate_element');
+			if (container) container.innerHTML = '';
+			new win.google.translate.TranslateElement(
+				{ pageLanguage: 'en', autoDisplay: false },
+				'google_translate_element'
 			);
-			if (
-				win.google &&
-				win.google.translate &&
-				win.google.translate.TranslateElement &&
-				win.google.translate.TranslateElement.InlineLayout &&
-				win.google.translate.TranslateElement.InlineLayout.SIMPLE
-			) {
-				console.log('Google Translate requirements met. Instantiating TranslateElement.');
-				// Clear any previous Translate dropdown to avoid duplicate renders
-				const container = document.getElementById('google_translate_element');
-				if (container) {
-					container.innerHTML = '';
-				}
-				new win.google.translate.TranslateElement(
-					{
-						pageLanguage: 'en',
-						layout: win.google.translate.TranslateElement.InlineLayout.SIMPLE,
-						autoDisplay: false
-					},
-					'google_translate_element'
-				);
-			} else {
-				console.log('Google Translate not fully loaded yet. Starting/continuing polling...');
-				// If global Translate namespace exists but InlineLayout is not yet ready, poll for it
-				let attempts = 0;
-				const interval = setInterval(() => {
-					attempts++;
-					if (
-						win.google &&
-						win.google.translate &&
-						win.google.translate.TranslateElement &&
-						win.google.translate.TranslateElement.InlineLayout &&
-						win.google.translate.TranslateElement.InlineLayout.SIMPLE
-					) {
-						console.log('Google Translate loaded during polling after', attempts, 'attempts.');
-						clearInterval(interval);
-						initTranslate();
-					} else if (attempts > 50) {
-						console.log('Google Translate polling timed out after 5 seconds.');
-						clearInterval(interval);
-					}
-				}, 100);
-			}
+			return true;
 		};
 
-		// Define the global callback for Google Translate
-		win.googleTranslateElementInit = initTranslate;
+		win.googleTranslateElementInit = init;
 
 		const scriptId = 'google-translate-script';
-		const script = document.getElementById(scriptId) as HTMLScriptElement | null;
-
-		if (!script) {
-			const newScript = document.createElement('script');
-			newScript.id = scriptId;
-			newScript.src =
+		if (!document.getElementById(scriptId)) {
+			const script = document.createElement('script');
+			script.id = scriptId;
+			script.src =
 				'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-			newScript.async = true;
-			document.body.appendChild(newScript);
-		} else {
-			if (
-				win.google &&
-				win.google.translate &&
-				win.google.translate.TranslateElement &&
-				win.google.translate.TranslateElement.InlineLayout &&
-				win.google.translate.TranslateElement.InlineLayout.SIMPLE
-			) {
-				initTranslate();
-			} else {
-				// Script exists in DOM but might still be downloading/loading, monitor it
-				script.addEventListener('load', () => {
-					setTimeout(initTranslate, 100);
-				});
-				// Polling fallback to guarantee it triggers
-				let attempts = 0;
-				const interval = setInterval(() => {
-					attempts++;
-					if (
-						win.google &&
-						win.google.translate &&
-						win.google.translate.TranslateElement &&
-						win.google.translate.TranslateElement.InlineLayout &&
-						win.google.translate.TranslateElement.InlineLayout.SIMPLE
-					) {
-						initTranslate();
-						clearInterval(interval);
-					} else if (attempts > 50) {
-						clearInterval(interval);
-					}
-				}, 100);
-			}
+			script.async = true;
+			document.body.appendChild(script);
 		}
-	});
 
-	$effect(() => {
-		// Stop speaking if the user navigates away or component unmounts
-		return () => {
-			if (typeof window !== 'undefined' && window.speechSynthesis) {
-				window.speechSynthesis.cancel();
-			}
-		};
-	});
+		// Polling fallback: covers remounts after client-side navigation,
+		// where the cb= callback never fires again.
+		if (!init()) {
+			let attempts = 0;
+			const interval = setInterval(() => {
+				if (init() || ++attempts > 50) clearInterval(interval);
+			}, 100);
+		}
+	}
 
 	function applySettings() {
 		const html = document.documentElement;
 
-		// 1. Font Size
-		html.classList.remove('text-sm', 'text-base', 'text-lg', 'text-xl');
-		if (fontSize === 'small') html.classList.add('text-sm');
-		else if (fontSize === 'normal') html.classList.add('text-base');
-		else if (fontSize === 'large') html.classList.add('text-lg');
-		else if (fontSize === 'xl') html.classList.add('text-xl');
+		html.classList.remove(...Object.values(FONT_SIZE_CLASSES));
+		html.classList.add(FONT_SIZE_CLASSES[fontSize]);
+		html.classList.toggle(DYSLEXIC_CLASS, dyslexicFont);
+		html.classList.toggle(UNDERLINE_CLASS, underlineLinks);
 
-		// 2. Dyslexic Font
-		if (dyslexicFont) {
-			html.style.setProperty('--font-sans', '"Comic Sans MS", "Comic Sans", cursive, sans-serif');
-		} else {
-			html.style.removeProperty('--font-sans');
-		}
-
-		// 3. Underline Links
-		if (underlineLinks) {
-			html.classList.add('force-underline');
-		} else {
-			html.classList.remove('force-underline');
-		}
-
-		// Save settings to localStorage
-		localStorage.setItem('a11y-font-size', fontSize);
-		localStorage.setItem('a11y-dyslexic', String(dyslexicFont));
-		localStorage.setItem('a11y-underline', String(underlineLinks));
+		localStorage.setItem(FONT_SIZE_KEY, fontSize);
+		localStorage.setItem(DYSLEXIC_KEY, String(dyslexicFont));
+		localStorage.setItem(UNDERLINE_KEY, String(underlineLinks));
 	}
 
-	function changeFontSize(size: string) {
+	function changeFontSize(size: FontSize) {
 		fontSize = size;
 		applySettings();
 	}
@@ -185,6 +119,13 @@
 
 		const text = mainContent.innerText || mainContent.textContent || '';
 		const utterance = new SpeechSynthesisUtterance(text);
+
+		// Follow the page language so a translated page is read with a
+		// matching voice instead of the English default.
+		const lang = pageLanguage(document);
+		utterance.lang = lang;
+		const voice = pickVoice(window.speechSynthesis.getVoices(), lang);
+		if (voice) utterance.voice = voice;
 
 		utterance.onend = () => {
 			isSpeaking = false;

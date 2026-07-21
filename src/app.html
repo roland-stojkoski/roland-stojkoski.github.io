@@ -19,6 +19,8 @@
 					var theme =
 						stored === 'latte' || stored === 'espresso' ? stored : dark ? 'espresso' : 'latte';
 					document.documentElement.setAttribute('data-theme', theme);
+					if (localStorage.getItem('a11y-dyslexic') === 'true')
+						document.documentElement.classList.add('dyslexic-font');
 				} catch (e) {
 					/* no-op: default theme from markup applies */
 				}

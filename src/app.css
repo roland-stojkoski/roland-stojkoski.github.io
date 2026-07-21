@@ -137,45 +137,53 @@ html.force-underline a {
 	text-decoration: underline !important;
 }
 
-/* Google Translate visual styling adjustments */
-.goog-te-gadget {
+/* Dyslexia-friendly font: must out-specify the hardcoded body/heading
+   font-families above, hence the !important. Code blocks stay monospace. */
+html.dyslexic-font body,
+html.dyslexic-font h1,
+html.dyslexic-font h2,
+html.dyslexic-font h3,
+html.dyslexic-font h4,
+html.dyslexic-font h5,
+html.dyslexic-font h6 {
+	font-family: 'Comic Sans MS', 'Comic Sans', 'Trebuchet MS', Verdana, sans-serif !important;
+	letter-spacing: 0.02em;
+}
+
+/* Google Translate: the widget's default layout renders a native <select>
+   (.goog-te-combo) — restyle it as a site-native field. Native selects open
+   the OS picker on mobile, so the language list scrolls properly. */
+#google_translate_element .goog-te-gadget {
+	font-family: inherit !important;
+	font-size: 0 !important; /* hides the "Powered by" text nodes */
+	color: transparent !important;
+}
+#google_translate_element .goog-te-gadget > span,
+#google_translate_element .goog-te-gadget img {
+	display: none !important;
+}
+#google_translate_element .goog-te-combo {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 100%;
+	margin: 0 !important;
+	padding: 6px 32px 6px 12px !important;
 	font-family: inherit !important;
 	font-size: 13px !important;
-}
-.goog-te-gadget-simple {
+	color: var(--color-base-content) !important;
 	background-color: var(--color-base-100) !important;
 	border: 1px solid var(--color-base-300) !important;
 	border-radius: var(--radius-field) !important;
-	padding: 6px 12px !important;
-	display: inline-flex !important;
-	align-items: center !important;
-	cursor: pointer !important;
-	color: var(--color-base-content) !important;
-	transition: all 0.2s ease !important;
+	cursor: pointer;
+	transition: border-color 0.2s ease;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
 }
-.goog-te-gadget-simple:hover {
+#google_translate_element .goog-te-combo:hover,
+#google_translate_element .goog-te-combo:focus {
 	border-color: var(--color-primary) !important;
-	background-color: var(--color-base-200) !important;
-}
-.goog-te-gadget-simple img {
-	display: none !important; /* Hide Google logo */
-}
-.goog-te-gadget-simple span {
-	color: var(--color-base-content) !important;
-}
-.goog-te-menu-value {
-	margin: 0 !important;
-	display: flex !important;
-	align-items: center !important;
-}
-.goog-te-menu-value > span:not(:first-child) {
-	display: none !important; /* Hide Google's built-in border and down arrow */
-}
-.goog-te-menu-value::after {
-	content: '▼';
-	font-size: 9px;
-	opacity: 0.5;
-	margin-left: 8px;
+	outline: none;
 }
 .skiptranslate iframe {
 	visibility: hidden !important;
