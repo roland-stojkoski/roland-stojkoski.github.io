@@ -20,10 +20,46 @@ export function isFontSize(value: unknown): value is FontSize {
 	return typeof value === 'string' && value in FONT_SIZE_CLASSES;
 }
 
-/** Language the page is currently displayed in (Google Translate rewrites
- * the html lang attribute when it translates the page). */
+export interface TranslateLanguage {
+	code: string;
+	label: string;
+}
+
+/** Languages offered by the site translator (Google Translate target codes). */
+export const TRANSLATE_LANGUAGES: TranslateLanguage[] = [
+	{ code: 'en', label: 'English (original)' },
+	{ code: 'hr', label: 'Croatian' },
+	{ code: 'mk', label: 'Macedonian' },
+	{ code: 'ga', label: 'Irish' },
+	{ code: 'de', label: 'German' },
+	{ code: 'es', label: 'Spanish' },
+	{ code: 'fr', label: 'French' },
+	{ code: 'it', label: 'Italian' },
+	{ code: 'pt', label: 'Portuguese' },
+	{ code: 'nl', label: 'Dutch' },
+	{ code: 'pl', label: 'Polish' },
+	{ code: 'uk', label: 'Ukrainian' },
+	{ code: 'tr', label: 'Turkish' },
+	{ code: 'ar', label: 'Arabic' },
+	{ code: 'hi', label: 'Hindi' },
+	{ code: 'zh-CN', label: 'Chinese (Simplified)' },
+	{ code: 'ja', label: 'Japanese' },
+	{ code: 'ko', label: 'Korean' }
+];
+
+/** Target language from Google Translate's googtrans cookie ('' if unset). */
+export function googtransTarget(cookies: string): string {
+	const match = cookies.match(/(?:^|;\s*)googtrans=([^;]*)/);
+	return match ? (decodeURIComponent(match[1]).split('/')[2] ?? '') : '';
+}
+
+/** Language the page is displayed in: the html lang attribute (rewritten by
+ * Google Translate once a translation applies), falling back to the
+ * googtrans cookie so a just-selected language is honored too. */
 export function pageLanguage(doc: Document): string {
-	return doc.documentElement.lang || 'en';
+	const lang = doc.documentElement.lang;
+	if (lang && lang.toLowerCase() !== 'en') return lang;
+	return googtransTarget(doc.cookie) || lang || 'en';
 }
 
 /** Best available speech-synthesis voice for a language: exact BCP-47 match

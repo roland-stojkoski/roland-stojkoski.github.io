@@ -7,8 +7,10 @@
 		DYSLEXIC_KEY,
 		FONT_SIZE_CLASSES,
 		FONT_SIZE_KEY,
+		TRANSLATE_LANGUAGES,
 		UNDERLINE_CLASS,
 		UNDERLINE_KEY,
+		googtransTarget,
 		isFontSize,
 		pageLanguage,
 		pickVoice,
@@ -21,6 +23,7 @@
 	let underlineLinks = $state(false);
 	let colorblindMode = $state(false);
 	let isSpeaking = $state(false);
+	let translateLang = $state('en');
 
 	onMount(() => {
 		const stored = localStorage.getItem(FONT_SIZE_KEY);
@@ -28,6 +31,7 @@
 		dyslexicFont = localStorage.getItem(DYSLEXIC_KEY) === 'true';
 		underlineLinks = localStorage.getItem(UNDERLINE_KEY) === 'true';
 		colorblindMode = localStorage.getItem(COLORBLIND_KEY) === 'true';
+		translateLang = googtransTarget(document.cookie) || 'en';
 		applySettings();
 
 		// Chrome populates the voice list lazily; requesting it early makes
@@ -45,11 +49,11 @@
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const win = window as any;
 
-		// The default (non-SIMPLE) layout renders a native <select>, which
-		// mobile browsers open in a scrollable OS picker — the SIMPLE layout's
-		// iframe menu cannot scroll on touch devices.
+		// element.js defines a TranslateElement stub before the engine has
+		// fully loaded; InlineLayout appearing is the reliable ready signal.
+		const ready = () => !!win.google?.translate?.TranslateElement?.InlineLayout;
 		const init = (): boolean => {
-			if (!win.google?.translate?.TranslateElement) return false;
+			if (!ready()) return false;
 			const container = document.getElementById('google_translate_element');
 			if (container) container.innerHTML = '';
 			new win.google.translate.TranslateElement(
@@ -78,6 +82,31 @@
 			const interval = setInterval(() => {
 				if (init() || ++attempts > 50) clearInterval(interval);
 			}, 100);
+		}
+	}
+
+	function setGoogtransCookie(lang: string) {
+		const clear = lang === 'en';
+		const value = clear ? '' : `/en/${lang}`;
+		const expiry = clear ? '; max-age=0' : '';
+		document.cookie = `googtrans=${value}; path=/${expiry}`;
+		document.cookie = `googtrans=${value}; domain=${location.hostname}; path=/${expiry}`;
+	}
+
+	function changeTranslation(event: Event) {
+		const lang = (event.currentTarget as HTMLSelectElement).value;
+		translateLang = lang;
+		setGoogtransCookie(lang);
+
+		// Drive the hidden widget's combo directly when it is up; otherwise
+		// (engine still loading, or back to english) reload — the engine
+		// applies the googtrans cookie on init.
+		const combo = document.querySelector<HTMLSelectElement>('.goog-te-combo');
+		if (combo && lang !== 'en') {
+			combo.value = lang;
+			combo.dispatchEvent(new Event('change'));
+		} else {
+			location.reload();
 		}
 	}
 
@@ -268,12 +297,23 @@
 			</button>
 		</div>
 
-		<!-- Google Translate integration -->
+		<!-- Site translation: our own picker drives the hidden Google widget -->
 		<div class="border-t border-base-300 pt-3">
 			<span class="mb-2 block text-[11px] font-bold tracking-wider uppercase opacity-60"
 				>Translate Site</span
 			>
-			<div id="google_translate_element" class="w-full"></div>
+			<select
+				id="site-translate"
+				class="select w-full select-sm"
+				aria-label="Translate site"
+				value={translateLang}
+				onchange={changeTranslation}
+			>
+				{#each TRANSLATE_LANGUAGES as language (language.code)}
+					<option value={language.code}>{language.label}</option>
+				{/each}
+			</select>
+			<div id="google_translate_element" class="hidden" aria-hidden="true"></div>
 		</div>
 	</div>
 </div>

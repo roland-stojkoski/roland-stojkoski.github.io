@@ -114,6 +114,14 @@ test.describe('accessibility menu', () => {
 		await expect(page.locator('html')).toHaveClass(/dyslexic-font/);
 	});
 
+	test('language picker renders with its own options', async ({ page }) => {
+		await page.goto('/');
+		await page.getByRole('button', { name: 'Accessibility Settings' }).click();
+		const picker = page.getByLabel('Translate site');
+		await expect(picker).toBeVisible();
+		await expect(picker.locator('option[value="hr"]')).toHaveText('Croatian');
+	});
+
 	test('colorblind theme swaps the primary color and survives reload', async ({ page }) => {
 		await page.emulateMedia({ colorScheme: 'light' });
 		await page.goto('/');

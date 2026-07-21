@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { isFontSize, pageLanguage, pickVoice } from './a11y';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { googtransTarget, isFontSize, pageLanguage, pickVoice } from './a11y';
 
 function voice(lang: string, name = lang): SpeechSynthesisVoice {
 	return { lang, name } as SpeechSynthesisVoice;
@@ -29,9 +29,31 @@ describe('pickVoice', () => {
 	});
 });
 
+describe('googtransTarget', () => {
+	it('extracts the target language', () => {
+		expect(googtransTarget('googtrans=/en/hr')).toBe('hr');
+		expect(googtransTarget('a=b; googtrans=%2Fen%2Fde; c=d')).toBe('de');
+	});
+
+	it('returns empty when unset or malformed', () => {
+		expect(googtransTarget('')).toBe('');
+		expect(googtransTarget('googtrans=nonsense')).toBe('');
+	});
+});
+
 describe('pageLanguage', () => {
+	beforeEach(() => {
+		document.cookie = 'googtrans=; path=/; max-age=0';
+	});
+
 	it('reads the html lang attribute', () => {
 		document.documentElement.lang = 'hr';
+		expect(pageLanguage(document)).toBe('hr');
+	});
+
+	it('falls back to the googtrans cookie before the page re-renders', () => {
+		document.documentElement.lang = 'en';
+		document.cookie = 'googtrans=/en/hr; path=/';
 		expect(pageLanguage(document)).toBe('hr');
 	});
 

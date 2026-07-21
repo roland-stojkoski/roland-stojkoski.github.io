@@ -17,6 +17,7 @@ describe('AccessibilityMenu', () => {
 		localStorage.clear();
 		document.documentElement.className = '';
 		document.documentElement.lang = 'en';
+		document.cookie = 'googtrans=; path=/; max-age=0';
 		document.getElementById('google-translate-script')?.remove();
 	});
 
@@ -86,6 +87,43 @@ describe('AccessibilityMenu', () => {
 			await user.click(screen.getByLabelText('Underline Links'));
 			expect(document.documentElement.classList.contains(UNDERLINE_CLASS)).toBe(true);
 			expect(localStorage.getItem(UNDERLINE_KEY)).toBe('true');
+		});
+	});
+
+	describe('translate site', () => {
+		it('renders the language picker natively, independent of google', () => {
+			render(AccessibilityMenu);
+			const picker = screen.getByLabelText('Translate site') as HTMLSelectElement;
+			expect(picker.value).toBe('en');
+			const labels = Array.from(picker.options).map((option) => option.text);
+			expect(labels).toContain('Croatian');
+			expect(labels).toContain('Macedonian');
+		});
+
+		it('restores the selected language from the googtrans cookie', () => {
+			document.cookie = 'googtrans=/en/hr; path=/';
+			render(AccessibilityMenu);
+			const picker = screen.getByLabelText('Translate site') as HTMLSelectElement;
+			expect(picker.value).toBe('hr');
+		});
+
+		it('sets the googtrans cookie and drives the hidden google widget', async () => {
+			const combo = document.createElement('select');
+			combo.className = 'goog-te-combo';
+			for (const value of ['', 'hr']) {
+				const option = document.createElement('option');
+				option.value = value;
+				combo.appendChild(option);
+			}
+			document.body.appendChild(combo);
+
+			const user = userEvent.setup();
+			render(AccessibilityMenu);
+			await user.selectOptions(screen.getByLabelText('Translate site'), 'hr');
+
+			expect(document.cookie).toContain('googtrans=/en/hr');
+			expect(combo.value).toBe('hr');
+			combo.remove();
 		});
 	});
 

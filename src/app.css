@@ -188,41 +188,8 @@ html.colorblind[data-theme='espresso'] {
 	--color-error-content: #fff5f0;
 }
 
-/* Google Translate: the widget's default layout renders a native <select>
-   (.goog-te-combo) — restyle it as a site-native field. Native selects open
-   the OS picker on mobile, so the language list scrolls properly. */
-#google_translate_element .goog-te-gadget {
-	font-family: inherit !important;
-	font-size: 0 !important; /* hides the "Powered by" text nodes */
-	color: transparent !important;
-}
-#google_translate_element .goog-te-gadget > span,
-#google_translate_element .goog-te-gadget img {
-	display: none !important;
-}
-#google_translate_element .goog-te-combo {
-	appearance: none;
-	-webkit-appearance: none;
-	width: 100%;
-	margin: 0 !important;
-	padding: 6px 32px 6px 12px !important;
-	font-family: inherit !important;
-	font-size: 13px !important;
-	color: var(--color-base-content) !important;
-	background-color: var(--color-base-100) !important;
-	border: 1px solid var(--color-base-300) !important;
-	border-radius: var(--radius-field) !important;
-	cursor: pointer;
-	transition: border-color 0.2s ease;
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-	background-repeat: no-repeat;
-	background-position: right 12px center;
-}
-#google_translate_element .goog-te-combo:hover,
-#google_translate_element .goog-te-combo:focus {
-	border-color: var(--color-primary) !important;
-	outline: none;
-}
+/* Google Translate runs headless behind the site's own language picker —
+   suppress every piece of UI its engine tries to inject. */
 .skiptranslate iframe {
 	visibility: hidden !important;
 	display: none !important;
