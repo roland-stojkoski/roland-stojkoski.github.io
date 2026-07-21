@@ -150,6 +150,42 @@ html.dyslexic-font h6 {
 	letter-spacing: 0.02em;
 }
 
+/* Colorblind theme: Okabe-Ito palette, distinguishable under the common
+   color-vision deficiencies. Selectors carry the data-theme attribute so
+   they out-specify daisyUI's own [data-theme] rules. */
+html.colorblind[data-theme='latte'] {
+	--color-primary: #0072b2;
+	--color-primary-content: #f0f8ff;
+	--color-secondary: #e69f00;
+	--color-secondary-content: #221a00;
+	--color-accent: #009e73;
+	--color-accent-content: #f0fdf9;
+	--color-info: #56b4e9;
+	--color-info-content: #082f49;
+	--color-success: #009e73;
+	--color-success-content: #f0fdf9;
+	--color-warning: #e69f00;
+	--color-warning-content: #221a00;
+	--color-error: #d55e00;
+	--color-error-content: #fff5f0;
+}
+html.colorblind[data-theme='espresso'] {
+	--color-primary: #56b4e9;
+	--color-primary-content: #06202e;
+	--color-secondary: #f0e442;
+	--color-secondary-content: #201f05;
+	--color-accent: #009e73;
+	--color-accent-content: #eafff8;
+	--color-info: #56b4e9;
+	--color-info-content: #082f49;
+	--color-success: #009e73;
+	--color-success-content: #eafff8;
+	--color-warning: #f0e442;
+	--color-warning-content: #201f05;
+	--color-error: #d55e00;
+	--color-error-content: #fff5f0;
+}
+
 /* Google Translate: the widget's default layout renders a native <select>
    (.goog-te-combo) — restyle it as a site-native field. Native selects open
    the OS picker on mobile, so the language list scrolls properly. */

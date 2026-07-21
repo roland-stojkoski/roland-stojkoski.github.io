@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {
+		COLORBLIND_CLASS,
+		COLORBLIND_KEY,
 		DYSLEXIC_CLASS,
 		DYSLEXIC_KEY,
 		FONT_SIZE_CLASSES,
@@ -17,6 +19,7 @@
 	let fontSize = $state<FontSize>('normal');
 	let dyslexicFont = $state(false);
 	let underlineLinks = $state(false);
+	let colorblindMode = $state(false);
 	let isSpeaking = $state(false);
 
 	onMount(() => {
@@ -24,6 +27,7 @@
 		fontSize = isFontSize(stored) ? stored : 'normal';
 		dyslexicFont = localStorage.getItem(DYSLEXIC_KEY) === 'true';
 		underlineLinks = localStorage.getItem(UNDERLINE_KEY) === 'true';
+		colorblindMode = localStorage.getItem(COLORBLIND_KEY) === 'true';
 		applySettings();
 
 		// Chrome populates the voice list lazily; requesting it early makes
@@ -84,10 +88,12 @@
 		html.classList.add(FONT_SIZE_CLASSES[fontSize]);
 		html.classList.toggle(DYSLEXIC_CLASS, dyslexicFont);
 		html.classList.toggle(UNDERLINE_CLASS, underlineLinks);
+		html.classList.toggle(COLORBLIND_CLASS, colorblindMode);
 
 		localStorage.setItem(FONT_SIZE_KEY, fontSize);
 		localStorage.setItem(DYSLEXIC_KEY, String(dyslexicFont));
 		localStorage.setItem(UNDERLINE_KEY, String(underlineLinks));
+		localStorage.setItem(COLORBLIND_KEY, String(colorblindMode));
 	}
 
 	function changeFontSize(size: FontSize) {
@@ -102,6 +108,11 @@
 
 	function toggleUnderline() {
 		underlineLinks = !underlineLinks;
+		applySettings();
+	}
+
+	function toggleColorblind() {
+		colorblindMode = !colorblindMode;
 		applySettings();
 	}
 
@@ -230,6 +241,20 @@
 				class="toggle toggle-primary toggle-sm"
 				checked={underlineLinks}
 				onchange={toggleUnderline}
+			/>
+		</div>
+
+		<!-- Colorblind Theme Toggle -->
+		<div class="flex items-center justify-between border-t border-base-300 py-2.5">
+			<label for="colorblind-toggle" class="cursor-pointer text-xs font-semibold opacity-70"
+				>Colorblind Theme</label
+			>
+			<input
+				id="colorblind-toggle"
+				type="checkbox"
+				class="toggle toggle-primary toggle-sm"
+				checked={colorblindMode}
+				onchange={toggleColorblind}
 			/>
 		</div>
 

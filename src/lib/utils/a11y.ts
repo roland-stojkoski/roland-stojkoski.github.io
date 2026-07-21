@@ -1,9 +1,11 @@
 export const FONT_SIZE_KEY = 'a11y-font-size';
 export const DYSLEXIC_KEY = 'a11y-dyslexic';
 export const UNDERLINE_KEY = 'a11y-underline';
+export const COLORBLIND_KEY = 'a11y-colorblind';
 
 export const DYSLEXIC_CLASS = 'dyslexic-font';
 export const UNDERLINE_CLASS = 'force-underline';
+export const COLORBLIND_CLASS = 'colorblind';
 
 export type FontSize = 'small' | 'normal' | 'large' | 'xl';
 

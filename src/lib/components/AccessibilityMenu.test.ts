@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import {
+	COLORBLIND_CLASS,
+	COLORBLIND_KEY,
 	DYSLEXIC_CLASS,
 	DYSLEXIC_KEY,
 	FONT_SIZE_KEY,
@@ -41,6 +43,25 @@ describe('AccessibilityMenu', () => {
 			render(AccessibilityMenu);
 			expect(screen.getByLabelText('Dyslexia Font')).toBeChecked();
 			expect(document.documentElement.classList.contains(DYSLEXIC_CLASS)).toBe(true);
+		});
+	});
+
+	describe('colorblind theme', () => {
+		it('applies the colorblind class and persists when toggled on', async () => {
+			const user = userEvent.setup();
+			render(AccessibilityMenu);
+			await user.click(screen.getByLabelText('Colorblind Theme'));
+			expect(document.documentElement.classList.contains(COLORBLIND_CLASS)).toBe(true);
+			expect(localStorage.getItem(COLORBLIND_KEY)).toBe('true');
+			await user.click(screen.getByLabelText('Colorblind Theme'));
+			expect(document.documentElement.classList.contains(COLORBLIND_CLASS)).toBe(false);
+		});
+
+		it('restores the setting from a previous visit on mount', () => {
+			localStorage.setItem(COLORBLIND_KEY, 'true');
+			render(AccessibilityMenu);
+			expect(screen.getByLabelText('Colorblind Theme')).toBeChecked();
+			expect(document.documentElement.classList.contains(COLORBLIND_CLASS)).toBe(true);
 		});
 	});
 

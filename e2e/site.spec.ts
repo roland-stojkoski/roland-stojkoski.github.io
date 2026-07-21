@@ -107,4 +107,18 @@ test.describe('accessibility menu', () => {
 		await page.reload();
 		await expect(page.locator('html')).toHaveClass(/dyslexic-font/);
 	});
+
+	test('colorblind theme swaps the primary color and survives reload', async ({ page }) => {
+		await page.emulateMedia({ colorScheme: 'light' });
+		await page.goto('/');
+		await page.getByRole('button', { name: 'Accessibility Settings' }).click();
+		await page.getByLabel('Colorblind Theme').click();
+		await expect(page.locator('html')).toHaveClass(/colorblind/);
+		const primary = await page.evaluate(() =>
+			getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim()
+		);
+		expect(primary).toBe('#0072b2');
+		await page.reload();
+		await expect(page.locator('html')).toHaveClass(/colorblind/);
+	});
 });

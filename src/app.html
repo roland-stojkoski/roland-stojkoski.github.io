@@ -21,6 +21,8 @@
 					document.documentElement.setAttribute('data-theme', theme);
 					if (localStorage.getItem('a11y-dyslexic') === 'true')
 						document.documentElement.classList.add('dyslexic-font');
+					if (localStorage.getItem('a11y-colorblind') === 'true')
+						document.documentElement.classList.add('colorblind');
 				} catch (e) {
 					/* no-op: default theme from markup applies */
 				}
