@@ -132,34 +132,10 @@
 							onclick={copyRssUrl}
 						>
 							{#if rssCopied}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									width="12"
-									height="12"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="3"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg
-								>
+								<Icon name="check" size={12} strokeWidth={3} class="text-success" />
 								Copied!
 							{:else}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									width="12"
-									height="12"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2.5"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><path
-										d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
-									></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg
-								>
+								<Icon name="clipboard" size={12} strokeWidth={2.5} />
 								Copy URL
 							{/if}
 						</button>

@@ -1,3 +1,35 @@
+/**
+ * Every icon the site renders, stored as the inner shapes of a 24x24 SVG.
+ *
+ * Provenance — this path data is copied from upstream sets, not generated:
+ *  - Feather (MIT, (c) 2013-2023 Cole Bemis, https://feathericons.com) —
+ *    directly for 'copy', 'check', 'instagram', 'briefcase' and 'file-text',
+ *    and indirectly for the glyphs Lucide's own LICENSE lists as
+ *    Feather-derived (the chevrons, the arrows, 'clipboard', 'external-link',
+ *    'moon', 'rss', 'search'), which keep Feather's MIT terms.
+ *  - Lucide (ISC, (c) Lucide Icons and Contributors, https://lucide.dev) —
+ *    the rest of the stroke glyphs.
+ *  - Simple Icons (CC0-1.0, https://simpleicons.org) — 'github', and
+ *    'linkedin' as it stood in Simple Icons 13.21.0; 14.0.0 dropped the
+ *    LinkedIn mark and the current set has no replacement.
+ *  - No upstream match — 'accessibility', 'home', 'user', 'school', 'map-pin'
+ *    and 'star' match nothing in the sets checked; their origin is unverified,
+ *    which is not the same as knowing they were drawn here.
+ * Several entries are reordered, rounded or simplified rather than copied
+ * whole. THIRD-PARTY-NOTICES.md records the per-glyph comparison and carries
+ * the verbatim ISC/MIT/CC0 texts those licences require; this comment is a
+ * pointer, not the notice — the bundler strips it. The notice that ships with
+ * the site is static/THIRD-PARTY-NOTICES.md, served at
+ * /THIRD-PARTY-NOTICES.md.
+ *
+ * Contract for every entry:
+ *  - inner shapes only, laid out on a 24x24 grid — iconMarkup() owns the <svg>
+ *    wrapper, the viewBox, the size and the stroke width
+ *  - no fill/stroke/colour attributes; colour arrives via currentColor
+ *  - type 'stroke' for outlined glyphs, 'fill' for solid brand marks
+ * To add one: take the shapes out of the upstream 24x24 SVG, drop its wrapper,
+ * and record the comparison in THIRD-PARTY-NOTICES.md.
+ */
 export interface IconDefinition {
 	/** 'stroke' icons render outlined, 'fill' icons render solid (brand marks). */
 	type: 'stroke' | 'fill';
@@ -30,13 +62,37 @@ export const icons = {
 		type: 'stroke',
 		svg: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>'
 	},
+	accessibility: {
+		type: 'stroke',
+		svg: '<circle cx="12" cy="12" r="10"/><path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 2v6M9 12h6M10 20h4"/>'
+	},
 	mail: {
 		type: 'stroke',
 		svg: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>'
 	},
+	search: {
+		type: 'stroke',
+		svg: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'
+	},
+	copy: {
+		type: 'stroke',
+		svg: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'
+	},
+	clipboard: {
+		type: 'stroke',
+		svg: '<rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>'
+	},
+	check: {
+		type: 'stroke',
+		svg: '<polyline points="20 6 9 17 4 12"/>'
+	},
 	'arrow-down': {
 		type: 'stroke',
 		svg: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>'
+	},
+	'arrow-right': {
+		type: 'stroke',
+		svg: '<path d="M5 12h14m-7-7 7 7-7 7"/>'
 	},
 	'arrow-up-right': {
 		type: 'stroke',
@@ -121,5 +177,40 @@ export const icons = {
 } as const satisfies Record<string, IconDefinition>;
 
 export type IconName = keyof typeof icons;
+
+export interface IconMarkupOptions {
+	size?: number;
+	/** Heavier than the default 2 keeps small or spotlit glyphs legible. */
+	strokeWidth?: number;
+	class?: string;
+	label?: string;
+}
+
+const escapeAttribute = (value: string) =>
+	value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/**
+ * Serialises an icon into a standalone `<svg>` string. This is the only place
+ * the wrapper is defined: Icon.svelte renders it, and callers that must inject
+ * raw markup into nodes Svelte does not own call it directly.
+ */
+export function iconMarkup(name: IconName, options: IconMarkupOptions = {}): string {
+	const { size = 20, strokeWidth = 2, class: className = '', label } = options;
+	const icon: IconDefinition = icons[name];
+	const outlined = icon.type === 'stroke';
+	const a11y = label
+		? `role="img" aria-label="${escapeAttribute(label)}"`
+		: 'role="presentation" aria-hidden="true"';
+
+	return (
+		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ' +
+		`width="${size}" height="${size}" ` +
+		`fill="${outlined ? 'none' : 'currentColor'}" ` +
+		`stroke="${outlined ? 'currentColor' : 'none'}" ` +
+		`stroke-width="${outlined ? strokeWidth : 0}" ` +
+		'stroke-linecap="round" stroke-linejoin="round" ' +
+		`class="${escapeAttribute(className)}" ${a11y}>${icon.svg}</svg>`
+	);
+}
 
 export const iconNames = Object.keys(icons) as IconName[];

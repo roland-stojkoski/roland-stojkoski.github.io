@@ -5,6 +5,7 @@
 	import '@fontsource/opendyslexic';
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -81,7 +82,16 @@
 	let targetTheme = $state('');
 	let animationTimeout: ReturnType<typeof setTimeout> | undefined;
 
+	// WCAG 2.3.3: the overlay is three 1.2s full-viewport animations, so it is
+	// never mounted for a reader who asked for reduced motion.
+	const prefersReducedMotion = () =>
+		typeof window !== 'undefined' &&
+		typeof window.matchMedia === 'function' &&
+		window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 	function handleThemeChange(e: Event) {
+		if (prefersReducedMotion()) return;
+
 		const customEvent = e as CustomEvent<{ theme: string }>;
 		targetTheme = customEvent.detail.theme;
 		isAnimating = false;
@@ -162,43 +172,16 @@
 		<div class="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
 			<div class="theme-transition-icons absolute flex items-center justify-center">
 				{#if targetTheme === 'latte'}
-					<!-- Stylized Sun -->
 					<div
 						class="flex h-24 w-24 items-center justify-center rounded-full border border-amber-400 bg-amber-400/20 text-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.4)] backdrop-blur-sm"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							width="48"
-							height="48"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path
-								d="m4.93 4.93 1.41 1.41"
-							/><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path
-								d="m6.34 17.66-1.41 1.41"
-							/><path d="m19.07 4.93-1.41 1.41" /></svg
-						>
+						<Icon name="sun" size={48} />
 					</div>
 				{:else if targetTheme === 'espresso'}
-					<!-- Stylized Moon -->
 					<div
 						class="flex h-24 w-24 items-center justify-center rounded-full border border-indigo-300 bg-indigo-300/20 text-indigo-300 shadow-[0_0_40px_rgba(165,180,252,0.4)] backdrop-blur-sm"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							width="48"
-							height="48"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg
-						>
+						<Icon name="moon" size={48} strokeWidth={2.5} />
 					</div>
 				{/if}
 			</div>

@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { site } from '$lib/config';
 
+	// HACK: the notices are served from static/THIRD-PARTY-NOTICES.md, a
+	// hand-kept byte-for-byte copy of the repo-root file — adapter-static
+	// publishes only static/, and there is no build step to copy it, so `cmp`
+	// the two whenever either changes.
 	const attributions = [
 		{
 			what: 'Favicon',
@@ -13,9 +17,33 @@
 			href: 'https://github.com/mvasigh/sveltekit-mdsvex-blog'
 		},
 		{
-			what: 'Icons',
-			credit: 'Hand-drawn in the style of Lucide (ISC) and Simple Icons (CC0)',
+			what: 'Icons (outline set)',
+			credit:
+				'Lucide (ISC) — © Lucide Icons and Contributors. Most stroke glyphs; some copied verbatim, others reordered, rounded or simplified on the same 24×24 grid.',
 			href: 'https://lucide.dev'
+		},
+		{
+			what: 'Icons (Feather-lineage glyphs)',
+			credit:
+				'Feather (MIT) — © 2013-2023 Cole Bemis. Copy, check, instagram, briefcase and file-text come straight from Feather; the chevrons, arrows, clipboard, external-link, moon, rss and search reach the site through Lucide but stay under Feather’s terms. Instagram and its logo are trademarks of Meta Platforms, Inc.',
+			href: 'https://feathericons.com'
+		},
+		{
+			what: 'Icons (GitHub mark)',
+			credit:
+				'Simple Icons (CC0 1.0) — used verbatim. GitHub and its logo are trademarks of GitHub, Inc.',
+			href: 'https://simpleicons.org'
+		},
+		{
+			what: 'Icons (LinkedIn mark)',
+			credit:
+				'Simple Icons (CC0 1.0), from release 13.21.0 — the set dropped its LinkedIn mark in 14.0.0, so there is no current upstream to point at. LinkedIn and its logo are trademarks of LinkedIn Corporation.',
+			href: 'https://github.com/simple-icons/simple-icons/blob/13.21.0/icons/linkedin.svg'
+		},
+		{
+			what: 'Icon licence texts (ISC, MIT, CC0) in full',
+			credit: 'THIRD-PARTY-NOTICES.md, with a per-glyph provenance table',
+			href: '/THIRD-PARTY-NOTICES.md'
 		},
 		{
 			what: 'Original home page photo (coffee cup, pre-2026 design)',
