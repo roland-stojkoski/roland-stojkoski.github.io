@@ -1,0 +1,5 @@
+# Authoritative toolchain pin: `mise install` gives you exactly what CI runs.
+# `.node-version` mirrors the node entry for contributors on nvm/fnm/nodenv and
+# for actions/setup-node; the ci workflow fails if the two files disagree.
+[tools]
+node = "22.23.1"

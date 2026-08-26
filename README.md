@@ -1,86 +1,72 @@
 # Roland Stojkoski's portfolio website
 
-Simple website that lists all my projects, articles and notable events.
-Powered by SvelteKit, Tailwind, DaisyUI, FlowBite, FontAwesome, Mailchimp, etc.
+Markdown-first portfolio and blog, statically generated and hosted on GitHub
+Pages. Powered by SvelteKit 2 + Svelte 5, Tailwind CSS 4, daisyUI 5 and
+mdsvex.
 
 Features:
 
-- Markdown - just add an `.md` file and new article page will be added
-- Plug and play UI components with Tailwind and DaisyUI - super easy for someone that's not proficient in frontend dev
-- Email subscription - using Mailchimp
-- Dark mode 😀
+- **Markdown as the source of truth** — drop an `.md` file into
+  `src/lib/assets/articles/` and the timeline entry, article page and RSS
+  feed appear automatically
+- **Article macros** — `<YouTube/>` lite embeds, `<StlViewer/>` in-browser 3D
+  models (three.js), `<Figure/>` and `<Compare/>` before/after sliders, all
+  usable in markdown without imports
+- **Dark mode done right** — `latte`/`espresso` themes, resolved before first
+  paint, persisted, synced to embeds
+- **Comments** — [giscus](https://giscus.app) (GitHub Discussions), enabled
+  once `repoId`/`categoryId` are filled in `src/lib/config.ts`
+- **Tests** — Vitest unit suite, Playwright e2e on desktop + mobile
+  viewports, Storybook for components
+- **CI/CD** — GitHub Actions checks every PR and deploys `main` to Pages
+- **Agent-ready** — see [`AGENTS.md`](AGENTS.md) and `.claude/skills/`
 
+## Adding an article
+
+Create `src/lib/assets/articles/<slug>.md`:
+
+```markdown
+---
+title: 'My article'
+date: 'M/D/YYYY'
+tldr: 'One-line summary for the timeline and RSS.'
+githubLink: 'https://github.com/...' # optional
 ---
 
-## Adding articles
+## Content starts here
 
-Add a Markdown `.md` file to - `src/lib/assets/articles/`.
-
-Add the following to the beggining file and fill out the `<>` values:
-
+<YouTube id="dQw4w9WgXcQ" title="Demo" />
 ```
----
-title: '<title>'
-date: '<m/d/yyyy>'
-tldr: '<timeline-summary>'
-githubLink: '<link-to-github-repo>' # not required
----
 
-```
+Assets go in `static/<slug>/`. Full guide:
+[`.claude/skills/write-article/SKILL.md`](.claude/skills/write-article/SKILL.md).
 
-The article will show up in the timeline and will be added as a page automatically.
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Development
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+npm install
+npm run dev          # dev server
+npm run build        # production build (prerendered to build/)
+npm run preview      # serve the production build
 ```
 
-## Building
+Full setup, testing and troubleshooting guide:
+[`DEVELOPMENT.md`](DEVELOPMENT.md). Planned work and tracked compromises:
+[`PLANNED.md`](PLANNED.md) (codetag section regenerates on every build and
+commit).
 
-To create a production version of your app:
+## Quality checks
 
 ```bash
-npm run build
+npm run lint             # prettier + eslint
+npm run check            # svelte-check
+npm run test:unit        # vitest (add -- --run for one-shot)
+npm run test:e2e         # playwright (builds + previews automatically)
+npm run storybook        # component workbench on :6006
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
 
 ## Deploying
 
-To deploy the production version to Github:
-
-```bash
-npm run deploy
-```
-
-Go to - `https://github.com/<username>/<username>.github.io/deployments` and check if the deployment succeeded.
-
-Open `https://<username>.github.io`.
-
-## Formatting
-
-To run the formatter:
-
-```bash
-npm run format
-```
-
-Then check with the linter:
-
-```bash
-npm run lint
-```
-
-# TODOs
-
-- Make the repo more generic so others can use it
-- Improve responsiveness
-- Add tests
+Pushes to `main` deploy automatically via `.github/workflows/deploy.yml`
+(repo Settings → Pages → Source must be set to "GitHub Actions"). No manual
+steps.

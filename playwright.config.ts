@@ -1,11 +1,30 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
-const config: PlaywrightTestConfig = {
+// Sandboxed environments can point at a system chromium instead of
+// downloading browsers (e.g. CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium).
+const launchOptions = process.env.CHROMIUM_EXECUTABLE_PATH
+	? { executablePath: process.env.CHROMIUM_EXECUTABLE_PATH }
+	: {};
+
+export default defineConfig({
+	testDir: 'e2e',
 	webServer: {
 		command: 'npm run build && npm run preview',
-		port: 4173
+		port: 4173,
+		reuseExistingServer: !process.env.CI
 	},
-	testDir: 'tests'
-};
-
-export default config;
+	use: {
+		baseURL: 'http://localhost:4173',
+		launchOptions
+	},
+	projects: [
+		{
+			name: 'desktop',
+			use: { ...devices['Desktop Chrome'], launchOptions }
+		},
+		{
+			name: 'mobile',
+			use: { ...devices['Pixel 7'], launchOptions }
+		}
+	]
+});
