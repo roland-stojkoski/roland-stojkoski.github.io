@@ -60,6 +60,9 @@ lives in `src/lib/markdown/macros.ts`):
 - `Compare` — before/after image slider; both images should have identical
   dimensions.
 
+Need a macro that does not exist yet? `.claude/skills/add-macro/SKILL.md`
+(mirrored at `.agents/skills/add-macro/SKILL.md`) walks through building one.
+
 ## 3. Assets
 
 Put article assets in `static/<slug>/` (e.g. `static/my-article/photo.png`)

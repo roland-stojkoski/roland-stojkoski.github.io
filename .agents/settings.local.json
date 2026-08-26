@@ -1,8 +1,0 @@
-{
-	"permissions": {
-		"allow": [
-			"Bash(sed -i '' 's/yr-${entryYear}/year-${entryYear}/' src/lib/components/Timeline.svelte)",
-			"Bash(grep -n 'year-${entryYear}' src/lib/components/Timeline.svelte)"
-		]
-	}
-}

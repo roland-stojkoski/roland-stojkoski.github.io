@@ -21,3 +21,6 @@ To ensure that both agents share the identical rules and skills:
 
 3. **Verify Mirroring**:
    Ensure that any new rule or skill folder created under `.claude/` is mirrored in `.agents/` (and vice-versa).
+
+4. **Know What Is Deliberately Not Mirrored**:
+   Only rules and skills are shared. `settings.json` and any `*.local.json` are per-tool on purpose — the two agents have different tool names and different permission grants, so the script skips them in both directions. `.claude/*.local.json` and `.agents/*.local.json` are local permission caches: they are gitignored and **MUST NOT** be committed. If you find one staged, unstage it rather than mirroring it.
