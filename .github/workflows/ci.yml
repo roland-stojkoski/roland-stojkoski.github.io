@@ -9,9 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: verify node pins agree
+        run: |
+          mise_node="$(sed -n 's/^node[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' mise.toml)"
+          pinned="$(tr -d '[:space:]' < .node-version)"
+          if [ -z "$mise_node" ]; then
+            echo "::error file=mise.toml::could not read the node pin from [tools]"
+            exit 1
+          fi
+          if [ "$mise_node" != "$pinned" ]; then
+            echo "::error file=mise.toml::mise.toml pins node $mise_node but .node-version pins $pinned"
+            exit 1
+          fi
+          echo "node pinned at $pinned"
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
           cache: npm
       - run: npm ci
       - run: npm run planned:check
@@ -27,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium

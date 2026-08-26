@@ -13,4 +13,6 @@ storybook-static/
 test-results/
 playwright-report/
 *storybook.log
-.claude/settings.local.json
+.claude/*.local.json
+.agents/*.local.json
+/screenshots/

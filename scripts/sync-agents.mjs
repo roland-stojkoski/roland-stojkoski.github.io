@@ -23,6 +23,17 @@ try {
 	// Not a git repo or git not available
 }
 
+/**
+ * True for files that must never cross between `.claude/` and `.agents/`:
+ * `settings.json` is one tool's command authorizations, and `*.local.json` is a
+ * per-machine permission cache an agent rewrites mid-session. Mirroring either
+ * one leaks a local file past the gitignore entry that covers its own directory.
+ */
+function isAgentPrivate(rel) {
+	const name = path.basename(rel);
+	return name === 'settings.json' || name.endsWith('.local.json');
+}
+
 // Helper to copy file if contents differ or target doesn't exist
 function syncFile(src, dest) {
 	if (!fs.existsSync(src)) return;
@@ -87,6 +98,7 @@ function main() {
 	for (const file of gitDeletedFiles) {
 		if (file.startsWith(claudeDir)) {
 			const rel = path.relative(claudeDir, file);
+			if (isAgentPrivate(rel)) continue;
 			const counterpart = path.join(agentsDir, rel);
 			if (fs.existsSync(counterpart)) {
 				fs.rmSync(counterpart, { recursive: true, force: true });
@@ -96,6 +108,7 @@ function main() {
 			}
 		} else if (file.startsWith(agentsDir)) {
 			const rel = path.relative(agentsDir, file);
+			if (isAgentPrivate(rel)) continue;
 			const counterpart = path.join(claudeDir, rel);
 			if (fs.existsSync(counterpart)) {
 				fs.rmSync(counterpart, { recursive: true, force: true });
@@ -110,8 +123,7 @@ function main() {
 	const claudeFiles = getFiles(claudeDir);
 	for (const file of claudeFiles) {
 		const rel = path.relative(claudeDir, file);
-		// Skip settings.json (Claude-specific command authorizations)
-		if (rel === 'settings.json') continue;
+		if (isAgentPrivate(rel)) continue;
 
 		const target = path.join(agentsDir, rel);
 		syncFile(file, target);
@@ -121,6 +133,8 @@ function main() {
 	const agentsFiles = getFiles(agentsDir);
 	for (const file of agentsFiles) {
 		const rel = path.relative(agentsDir, file);
+		if (isAgentPrivate(rel)) continue;
+
 		const target = path.join(claudeDir, rel);
 		syncFile(file, target);
 	}
