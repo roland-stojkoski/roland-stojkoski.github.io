@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Icon from './Icon.svelte';
 	import {
 		COLORBLIND_CLASS,
 		COLORBLIND_KEY,
@@ -7,15 +8,31 @@
 		DYSLEXIC_KEY,
 		FONT_SIZE_CLASSES,
 		FONT_SIZE_KEY,
+		FONT_SIZE_OPTIONS,
 		TRANSLATE_LANGUAGES,
 		UNDERLINE_CLASS,
 		UNDERLINE_KEY,
+		announceText,
 		googtransTarget,
 		isFontSize,
+		opensSelectPopup,
 		pageLanguage,
 		pickVoice,
+		rovingIndex,
+		spokenName,
 		type FontSize
 	} from '$lib/utils/a11y';
+
+	const uid = $props.id();
+	const panelId = `a11y-panel-${uid}`;
+	const sizeLabelId = `a11y-size-label-${uid}`;
+	const ttsLabelId = `a11y-tts-label-${uid}`;
+	const ttsButtonId = `a11y-tts-button-${uid}`;
+	const dyslexicId = `a11y-dyslexic-${uid}`;
+	const underlineId = `a11y-underline-${uid}`;
+	const colorblindId = `a11y-colorblind-${uid}`;
+	const translateId = `a11y-translate-${uid}`;
+	const translateWidgetId = `google-translate-element-${uid}`;
 
 	let isOpen = $state(false);
 	let fontSize = $state<FontSize>('normal');
@@ -24,6 +41,12 @@
 	let colorblindMode = $state(false);
 	let isSpeaking = $state(false);
 	let translateLang = $state('en');
+	let status = $state('');
+
+	let triggerEl = $state<HTMLButtonElement | null>(null);
+	let panelEl = $state<HTMLDivElement | null>(null);
+	let ttsButtonEl = $state<HTMLButtonElement | null>(null);
+	let selectPopupOpen = false;
 
 	onMount(() => {
 		const stored = localStorage.getItem(FONT_SIZE_KEY);
@@ -54,11 +77,12 @@
 		const ready = () => !!win.google?.translate?.TranslateElement?.InlineLayout;
 		const init = (): boolean => {
 			if (!ready()) return false;
-			const container = document.getElementById('google_translate_element');
-			if (container) container.innerHTML = '';
+			const container = document.getElementById(translateWidgetId);
+			if (!container) return false;
+			container.innerHTML = '';
 			new win.google.translate.TranslateElement(
 				{ pageLanguage: 'en', autoDisplay: false },
-				'google_translate_element'
+				translateWidgetId
 			);
 			return true;
 		};
@@ -95,6 +119,7 @@
 
 	function changeTranslation(event: Event) {
 		const lang = (event.currentTarget as HTMLSelectElement).value;
+		selectPopupOpen = false;
 		translateLang = lang;
 		setGoogtransCookie(lang);
 
@@ -105,6 +130,11 @@
 		if (combo && lang !== 'en') {
 			combo.value = lang;
 			combo.dispatchEvent(new Event('change'));
+			// The select speaks its own new value; what nothing reports is that
+			// the page text underneath has been swapped out.
+			announce(
+				`Page translated to ${TRANSLATE_LANGUAGES.find((entry) => entry.code === lang)?.label ?? lang}`
+			);
 		} else {
 			location.reload();
 		}
@@ -125,23 +155,47 @@
 		localStorage.setItem(COLORBLIND_KEY, String(colorblindMode));
 	}
 
+	/** Speaks a change that no focused control reports by itself. A checkbox
+	 * or radio already announces its own new state, and repeating it here is
+	 * heard twice by exactly the people this panel is for. */
+	function announce(message: string) {
+		status = announceText(status, message);
+	}
+
+	/** Speaks a read-aloud change only on activation paths that leave focus
+	 * elsewhere — Safari's click, Voice Control, Dragon. With focus on the
+	 * button, aria-pressed and the Play/Stop name change are both announced
+	 * already, and a third utterance is the double-speak this panel avoids. */
+	function announceUnfocused(message: string) {
+		if (document.activeElement !== ttsButtonEl) announce(message);
+	}
+
 	function changeFontSize(size: FontSize) {
 		fontSize = size;
 		applySettings();
 	}
 
-	function toggleDyslexic() {
-		dyslexicFont = !dyslexicFont;
+	function handleSizeKeydown(event: KeyboardEvent, index: number) {
+		const next = rovingIndex(event.key, index, FONT_SIZE_OPTIONS.length);
+		if (next === null) return;
+		event.preventDefault();
+		changeFontSize(FONT_SIZE_OPTIONS[next].size);
+		const group = (event.currentTarget as HTMLElement).parentElement;
+		group?.querySelectorAll<HTMLElement>('[role="radio"]')[next]?.focus();
+	}
+
+	function toggleDyslexic(event: Event) {
+		dyslexicFont = (event.currentTarget as HTMLInputElement).checked;
 		applySettings();
 	}
 
-	function toggleUnderline() {
-		underlineLinks = !underlineLinks;
+	function toggleUnderline(event: Event) {
+		underlineLinks = (event.currentTarget as HTMLInputElement).checked;
 		applySettings();
 	}
 
-	function toggleColorblind() {
-		colorblindMode = !colorblindMode;
+	function toggleColorblind(event: Event) {
+		colorblindMode = (event.currentTarget as HTMLInputElement).checked;
 		applySettings();
 	}
 
@@ -151,6 +205,7 @@
 		if (isSpeaking) {
 			window.speechSynthesis.cancel();
 			isSpeaking = false;
+			announceUnfocused('Stopped reading the page');
 			return;
 		}
 
@@ -175,83 +230,162 @@
 		};
 
 		isSpeaking = true;
+		announceUnfocused('Reading the page aloud');
 		window.speechSynthesis.speak(utterance);
+	}
+
+	function toggleMenu() {
+		if (isOpen) closeMenu();
+		else isOpen = true;
+	}
+
+	function closeMenu(restoreFocus = true) {
+		if (!isOpen) return;
+		isOpen = false;
+		if (restoreFocus) triggerEl?.focus();
+	}
+
+	function focusIsInside() {
+		const active = document.activeElement;
+		return !!active && (!!triggerEl?.contains(active) || !!panelEl?.contains(active));
+	}
+
+	function handleWindowKeydown(event: KeyboardEvent) {
+		if (!isOpen || event.key !== 'Escape' || event.defaultPrevented) return;
+
+		// Firefox delivers the Escape that dismisses an open <select> popup to
+		// the page as well, so an unguarded handler tears the panel down while
+		// the user is only backing out of the language list. The guard is
+		// therefore narrowed to a popup we saw being opened — the alternative,
+		// swallowing every Escape aimed at the select, kills the dismissal
+		// gesture for anyone who merely tabbed onto the language picker.
+		//
+		// No browser reports a popup closing, so the flag is cleared as it is
+		// spent: where the popup's own Escape never reaches us (Chrome, Safari)
+		// the flag is stale and costs one extra keypress, never the gesture.
+		if (selectPopupOpen && (event.target as HTMLElement | null)?.tagName === 'SELECT') {
+			selectPopupOpen = false;
+			return;
+		}
+
+		closeMenu(focusIsInside());
+	}
+
+	function handleWindowPointerdown(event: Event) {
+		if (!isOpen) return;
+		const target = event.target as Node | null;
+		if (!target) return;
+		if (triggerEl?.contains(target) || panelEl?.contains(target)) return;
+
+		// A pointer dismissal should not yank focus away from wherever the
+		// user just clicked; only reclaim it if it was inside the panel, which
+		// is about to go inert underneath it.
+		const active = document.activeElement;
+		const wasInside = !!active && !!panelEl?.contains(active);
+		closeMenu(false);
+		if (!wasInside) return;
+
+		// The browser's own mousedown focus handling runs after this listener
+		// and drops focus on <body> when the click lands on non-focusable text,
+		// so the restore has to outlast it — and then stand down if the click
+		// gave focus to something of its own.
+		setTimeout(() => {
+			const settled = document.activeElement;
+			if (!settled || settled === document.body) triggerEl?.focus();
+		});
+	}
+
+	function handleTranslateKeydown(event: KeyboardEvent) {
+		if (opensSelectPopup(event)) selectPopupOpen = true;
+	}
+
+	function handleFocusout(event: FocusEvent) {
+		const next = event.relatedTarget as Node | null;
+
+		// A null relatedTarget is a blur with nowhere to go (window switch, a
+		// click on non-focusable chrome); the panel should survive those.
+		if (!next) return;
+		if (triggerEl?.contains(next) || panelEl?.contains(next)) return;
+		closeMenu(false);
 	}
 </script>
 
+<svelte:window onkeydown={handleWindowKeydown} onpointerdown={handleWindowPointerdown} />
+
 <div class="relative inline-block text-left">
 	<button
+		bind:this={triggerEl}
+		type="button"
 		class="btn btn-square rounded-lg btn-ghost"
-		onclick={() => (isOpen = !isOpen)}
+		onclick={toggleMenu}
 		aria-expanded={isOpen}
-		aria-haspopup="true"
+		aria-controls={panelId}
 		aria-label="Accessibility Settings"
 		title="Accessibility Settings"
 	>
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 24 24"
-			width="20"
-			height="20"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="2"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-		>
-			<circle cx="12" cy="12" r="10" />
-			<path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 2v6M9 12h6M10 20h4" />
-		</svg>
+		<Icon name="accessibility" />
 	</button>
 
-	{#if isOpen}
-		<!-- Click outside backdrop to close dropdown -->
-		<button
-			class="fixed inset-0 z-40 h-full w-full cursor-default bg-transparent"
-			onclick={() => (isOpen = false)}
-			aria-label="Close accessibility settings"
-		></button>
-	{/if}
+	<!-- NOTE: the panel stays mounted so its open/close transition can run;
+	     `inert` is what keeps the closed panel out of the tab order and the
+	     accessibility tree. Dropping `inert` would let keyboard and screen
+	     reader users land inside an invisible menu.
 
+	     It is a disclosure, not a modal: the page behind it stays readable and
+	     operable, so Tab walks out of the panel into the rest of the nav
+	     instead of being trapped, and the last control is an explicit Close
+	     for anyone whose switch interface emits no Escape. -->
 	<div
-		class="absolute right-0 z-50 mt-2 w-64 origin-top-right transform rounded-box border border-base-300 bg-base-200 p-4 shadow-xl transition-all duration-200"
+		bind:this={panelEl}
+		id={panelId}
+		role="group"
+		aria-label="Accessibility settings"
+		inert={!isOpen}
+		onfocusout={handleFocusout}
+		class="a11y-panel absolute right-0 z-50 mt-2 max-h-[calc(100vh-5rem)] w-64 origin-top-right transform overflow-y-auto rounded-box border border-base-300 bg-base-200 p-4 shadow-xl transition-all duration-200"
 		class:opacity-0={!isOpen}
 		class:pointer-events-none={!isOpen}
 		class:scale-95={!isOpen}
 		class:translate-y-[-8px]={!isOpen}
 	>
-		<h3 class="mb-3 font-mono text-xs font-bold opacity-80">// accessibility</h3>
+		<!-- Decorative caption, not a heading: it would otherwise be read as
+		     "slash slash accessibility" and land in the page's heading list
+		     under no h1 or h2, while the panel already carries the same name. -->
+		<p aria-hidden="true" class="mb-3 font-mono text-xs font-bold opacity-80">// accessibility</p>
 
 		<!-- Font Size Controls -->
 		<div class="mb-4 space-y-2">
-			<span class="text-[11px] font-bold tracking-wider uppercase opacity-60">Text Size</span>
-			<div class="join grid w-full grid-cols-4">
-				<button
-					class="btn join-item btn-xs {fontSize === 'small' ? 'btn-primary' : 'btn-outline'}"
-					onclick={() => changeFontSize('small')}>A-</button
-				>
-				<button
-					class="btn join-item btn-xs {fontSize === 'normal' ? 'btn-primary' : 'btn-outline'}"
-					onclick={() => changeFontSize('normal')}>Normal</button
-				>
-				<button
-					class="btn join-item btn-xs {fontSize === 'large' ? 'btn-primary' : 'btn-outline'}"
-					onclick={() => changeFontSize('large')}>A+</button
-				>
-				<button
-					class="btn join-item btn-xs {fontSize === 'xl' ? 'btn-primary' : 'btn-outline'}"
-					onclick={() => changeFontSize('xl')}>A++</button
-				>
+			<span id={sizeLabelId} class="text-[11px] font-bold tracking-wider uppercase opacity-60"
+				>Text Size</span
+			>
+			<div class="join grid w-full grid-cols-4" role="radiogroup" aria-labelledby={sizeLabelId}>
+				<!-- The glyph is repeated inside the hidden node: building the whole
+				     name in one text node keeps its spacing ours rather than each
+				     engine's name-from-content concatenation. -->
+				{#each FONT_SIZE_OPTIONS as option, index (option.size)}
+					<button
+						type="button"
+						role="radio"
+						aria-checked={fontSize === option.size}
+						tabindex={fontSize === option.size ? 0 : -1}
+						class="btn join-item btn-xs {fontSize === option.size ? 'btn-primary' : 'btn-outline'}"
+						onclick={() => changeFontSize(option.size)}
+						onkeydown={(event) => handleSizeKeydown(event, index)}
+						><span aria-hidden="true">{option.glyph}</span><span class="sr-only"
+							>{spokenName(option)}</span
+						></button
+					>
+				{/each}
 			</div>
 		</div>
 
 		<!-- Dyslexic Font Toggle -->
 		<div class="flex items-center justify-between border-t border-base-300 py-2.5">
-			<label for="dyslexic-toggle" class="cursor-pointer text-xs font-semibold opacity-70"
+			<label for={dyslexicId} class="cursor-pointer text-xs font-semibold opacity-70"
 				>Dyslexia Font</label
 			>
 			<input
-				id="dyslexic-toggle"
+				id={dyslexicId}
 				type="checkbox"
 				class="toggle toggle-primary toggle-sm"
 				checked={dyslexicFont}
@@ -261,11 +395,11 @@
 
 		<!-- Underline Links Toggle -->
 		<div class="flex items-center justify-between border-t border-base-300 py-2.5">
-			<label for="underline-toggle" class="cursor-pointer text-xs font-semibold opacity-70"
+			<label for={underlineId} class="cursor-pointer text-xs font-semibold opacity-70"
 				>Underline Links</label
 			>
 			<input
-				id="underline-toggle"
+				id={underlineId}
 				type="checkbox"
 				class="toggle toggle-primary toggle-sm"
 				checked={underlineLinks}
@@ -275,11 +409,11 @@
 
 		<!-- Colorblind Theme Toggle -->
 		<div class="flex items-center justify-between border-t border-base-300 py-2.5">
-			<label for="colorblind-toggle" class="cursor-pointer text-xs font-semibold opacity-70"
+			<label for={colorblindId} class="cursor-pointer text-xs font-semibold opacity-70"
 				>Colorblind Theme</label
 			>
 			<input
-				id="colorblind-toggle"
+				id={colorblindId}
 				type="checkbox"
 				class="toggle toggle-primary toggle-sm"
 				checked={colorblindMode}
@@ -289,10 +423,23 @@
 
 		<!-- Text-to-Speech Toggle -->
 		<div class="flex items-center justify-between border-t border-base-300 py-2.5">
-			<label for="tts-button" class="cursor-pointer text-xs font-semibold opacity-70"
-				>Read Page Aloud</label
+			<!-- The row caption is the button's own label, so it is hidden from
+			     the reading order to keep browse mode from saying it twice. -->
+			<span id={ttsLabelId} aria-hidden="true" class="text-xs font-semibold opacity-70"
+				>Read Page Aloud</span
 			>
-			<button id="tts-button" class="btn btn-outline btn-primary btn-xs" onclick={toggleSpeech}>
+			<!-- Naming the button after the row *and* itself keeps the visible
+			     Play/Stop word inside the accessible name (WCAG 2.5.3) while
+			     aria-pressed still carries the state. -->
+			<button
+				bind:this={ttsButtonEl}
+				id={ttsButtonId}
+				type="button"
+				class="btn btn-outline btn-primary btn-xs"
+				aria-labelledby="{ttsLabelId} {ttsButtonId}"
+				aria-pressed={isSpeaking}
+				onclick={toggleSpeech}
+			>
 				{isSpeaking ? 'Stop' : 'Play'}
 			</button>
 		</div>
@@ -303,17 +450,28 @@
 				>Translate Site</span
 			>
 			<select
-				id="site-translate"
+				id={translateId}
 				class="select w-full select-sm"
 				aria-label="Translate site"
 				value={translateLang}
 				onchange={changeTranslation}
+				onmousedown={() => (selectPopupOpen = true)}
+				onkeydown={handleTranslateKeydown}
+				onblur={() => (selectPopupOpen = false)}
 			>
 				{#each TRANSLATE_LANGUAGES as language (language.code)}
 					<option value={language.code}>{language.label}</option>
 				{/each}
 			</select>
-			<div id="google_translate_element" class="hidden" aria-hidden="true"></div>
+			<div id={translateWidgetId} class="hidden" aria-hidden="true"></div>
+		</div>
+
+		<div class="mt-3 border-t border-base-300 pt-3">
+			<button type="button" class="btn w-full btn-ghost btn-xs" onclick={() => closeMenu()}
+				>Close</button
+			>
 		</div>
 	</div>
+
+	<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">{status}</div>
 </div>

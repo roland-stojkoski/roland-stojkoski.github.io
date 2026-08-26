@@ -21,7 +21,7 @@
 		aria-label="Main navigation"
 	>
 		<!-- Left side: Mobile Menu + Brand Logo -->
-		<div class="flex items-center gap-3">
+		<div class="flex min-w-0 items-center gap-3">
 			<div class="dropdown md:hidden">
 				<button tabindex="0" class="btn btn-square rounded-lg btn-ghost" aria-label="Open menu">
 					<Icon name="menu" />
@@ -73,8 +73,8 @@
 			</a>
 
 			<!-- Mobile Logo -->
-			<a href="/" class="flex items-center gap-2 text-left md:hidden">
-				<div class="avatar">
+			<a href="/" class="flex min-w-0 items-center gap-2 text-left md:hidden">
+				<div class="avatar shrink-0">
 					<div class="w-7 rounded-lg ring-1 ring-base-content/10">
 						<img
 							src="/rs-high-res-current-photo-cropped.jpg"
@@ -83,8 +83,8 @@
 						/>
 					</div>
 				</div>
-				<div class="flex flex-col items-start gap-0">
-					<span class="font-title text-xs leading-none font-extrabold tracking-wide">
+				<div class="flex min-w-0 flex-col items-start gap-0">
+					<span class="font-title truncate text-xs leading-none font-extrabold tracking-wide">
 						roland stojkoski
 					</span>
 					<span class="mt-0.5 font-mono text-[8px] leading-none opacity-50"> /sys/dev </span>
@@ -93,7 +93,7 @@
 		</div>
 
 		<!-- Right side: Menu Links + Toggles -->
-		<div class="flex items-center gap-1.5">
+		<div class="flex shrink-0 items-center gap-1.5">
 			<ul class="menu menu-horizontal hidden flex-nowrap gap-1.5 px-1 font-mono text-sm md:flex">
 				<!-- Desktop Dropdown Submenu for Articles -->
 				<li class="dropdown-hover dropdown dropdown-end">
@@ -103,20 +103,7 @@
 					>
 						<Icon name="file-text" size={14} class="opacity-70" />
 						Articles
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							width="12"
-							height="12"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							class="opacity-60"
-						>
-							<path d="m6 9 6 6 6-6" />
-						</svg>
+						<Icon name="chevron-down" size={12} strokeWidth={2.5} class="opacity-60" />
 					</a>
 					<ul
 						class="dropdown-content menu z-50 mt-1 w-80 gap-0.5 rounded-xl border border-base-300/40 bg-base-100/95 p-1.5 shadow-xl backdrop-blur-md before:absolute before:-top-3 before:right-0 before:left-0 before:h-3 before:content-['']"

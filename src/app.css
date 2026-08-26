@@ -137,6 +137,23 @@ html.force-underline a {
 	text-decoration: underline !important;
 }
 
+/* The panel hangs off a trigger that sits a few rem in from the right edge
+   of the viewport (nav padding + gap + theme toggle) and grows leftwards, so
+   its rem-sized width runs off the left edge once text-only zoom inflates the
+   root font — 200% on a 412px phone put it at -76px. Reserving that chrome in
+   rem keeps the cap correct at every root size. */
+.a11y-panel {
+	max-width: calc(100vw - 5.5rem);
+}
+
+/* The accessibility panel is the one piece of motion the menu owns; a user
+   who asked for reduced motion gets the same open/close, instantly. */
+@media (prefers-reduced-motion: reduce) {
+	.a11y-panel {
+		transition: none !important;
+	}
+}
+
 /* Dyslexia-friendly font: OpenDyslexic is self-hosted (fontsource) because
    fallbacks like Comic Sans don't exist on android/linux, where the toggle
    would otherwise change nothing. !important out-specifies the hardcoded
